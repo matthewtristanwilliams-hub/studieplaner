@@ -6,7 +6,7 @@
 <title>Kandidatplanlægger DTU</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
 <style>
 :root {
   /* Layout: fire trin, ét ad gangen. Lister er lukkede harmonikaer, så skærmen kun viser det, man er i gang med. Kursusnumre i mono som i kursusbasen. */
@@ -338,6 +338,324 @@ body[data-view="start"] .panels { display: none; }
   .step { flex-direction: column; gap: 4px; font-size: 12px; padding: 6px 2px 8px; }
   .panel > h2, #start h2 { font-size: 21px; }
 }
+
+/* Tilgængelighed: større trykflader, tydeligere felter, læsbar mindste-tekst */
+:root { --field-line: #80879a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --field-line: #6b7388; } }
+:root[data-theme="dark"] { --field-line: #6b7388; }
+input, select, .rmb, .wish { border-color: var(--field-line); }
+.crs .nm { overflow-wrap: break-word; hyphens: auto; }
+.sea, .semtag, .pklab, .tag, .rmark, .cn { font-size: 12px; }
+.tag.tag-obl { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.semh { min-height: 44px; }
+.rmb, .si .mvs { min-height: 32px; }
+.addb { width: 36px; height: 36px; }
+.lang button, .btn-sm { min-height: 36px; }
+.semsum[data-semopen] { cursor: pointer; }
+@media (max-width: 520px) { .rmb, .si .mvs { min-height: 40px; } }
+
+/* Tema (valgt ved afstemning) */
+/* ==========================================================================
+   Design B — "Swiss engineering poster"
+   Sort/hvid papir, ét signal-orange, stramt grid, store tal, mono kursusnumre.
+   --signal = flader (altid med sort tekst); --accent = tekst-sikker mørk orange.
+   ========================================================================== */
+:root {
+  color-scheme: light;
+  --bg: #f0efea; --surface: #ffffff; --ink: #0d0d0d; --muted: #55534e; --line: #d4d2cb;
+  --rule: #0d0d0d;            /* strukturelle linjer: kort, faner, rammer */
+  --bar: #0d0d0d;             /* de tykke plakat-streger */
+  --on-ink-accent: #ff4f00;   /* orange tekst/markør på ink-flade */
+  --signal: #ff4f00; --signal-ink: #0d0d0d;
+  --accent: #b83300; --accent-ink: #ffffff; --accent-soft: #e6e4dd;   /* neutral hover-tone, ikke fersken */
+  --focus: #d93d00;
+  --inv-bg: #0d0d0d; --inv-ink: #f0efea; --inv-muted: #b5b3ac; --inv-line: #3a3936; --inv-tick: #6e6c66;
+  --btn-bg: #0d0d0d; --btn-ink: #ffffff;
+  --field-line: #6e6c66;
+  --ok: #12703a; --ok-bg: #d9f0df; --info: #0a6478; --info-bg: #d6ecf2;
+  --maybe: #6236b8; --maybe-bg: #ebe4f8; --warn: #b83300; --warn-bg: var(--surface); --none: #4f4d48; --none-bg: #e4e2dc;
+  --au: #8a3b12; --au-bg: #8a3b12; --au-ink: #ffffff; --sp: #2f6a12; --sp-bg: #2f6a12; --sp-ink: #ffffff;
+  --bad: #b3261e; --bad-bg: #fbe1de;
+  --display: "Archivo", "Inter Display", "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --body: "Archivo", "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 0px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0b0b0b; --surface: #161616; --ink: #f2f1ec; --muted: #a9a7a0; --line: #34332f;
+    --rule: #8d8b84; --bar: #f2f1ec; --on-ink-accent: #b83300;
+    --signal: #ff5a1f; --signal-ink: #0b0b0b;
+    --accent: #ff6a2b; --accent-ink: #0b0b0b; --accent-soft: #262624;
+    --focus: #ff7a3d;
+    --inv-bg: #161616; --inv-ink: #f2f1ec; --inv-muted: #a9a7a0; --inv-line: #3a3936; --inv-tick: #77756e;
+    --btn-bg: #f2f1ec; --btn-ink: #0b0b0b;
+    --field-line: #77756e;
+    --ok: #6fd69b; --ok-bg: #12301f; --info: #69d0e3; --info-bg: #0d323c;
+    --maybe: #c3abf6; --maybe-bg: #2a2144; --warn: #ff6a2b; --warn-bg: var(--surface); --none: #a9a7a0; --none-bg: #262624;
+    --au: #f0a875; --au-bg: #f0a875; --au-ink: #1a0d04; --sp: #a6d977; --sp-bg: #a6d977; --sp-ink: #0f1a06;
+    --bad: #ff9c92; --bad-bg: #44181a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0b0b; --surface: #161616; --ink: #f2f1ec; --muted: #a9a7a0; --line: #34332f;
+  --rule: #8d8b84; --bar: #f2f1ec; --on-ink-accent: #b83300;
+  --signal: #ff5a1f; --signal-ink: #0b0b0b;
+  --accent: #ff6a2b; --accent-ink: #0b0b0b; --accent-soft: #262624;
+  --focus: #ff7a3d;
+  --inv-bg: #161616; --inv-ink: #f2f1ec; --inv-muted: #a9a7a0; --inv-line: #3a3936; --inv-tick: #77756e;
+  --btn-bg: #f2f1ec; --btn-ink: #0b0b0b;
+  --field-line: #77756e;
+  --ok: #6fd69b; --ok-bg: #12301f; --info: #69d0e3; --info-bg: #0d323c;
+  --maybe: #c3abf6; --maybe-bg: #2a2144; --warn: #ff6a2b; --warn-bg: var(--surface); --none: #a9a7a0; --none-bg: #262624;
+  --au: #f0a875; --au-bg: #f0a875; --au-ink: #1a0d04; --sp: #a6d977; --sp-bg: #a6d977; --sp-ink: #0f1a06;
+  --bad: #ff9c92; --bad-bg: #44181a;
+}
+
+/* ---------- Grundlag ---------- */
+body { font: 400 15px/1.5 var(--body); letter-spacing: -0.003em; font-feature-settings: "ss01"; }
+h1, h2, h3, h4 { font-family: var(--display); letter-spacing: -0.02em; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 0; }
+a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.page { max-width: 880px; padding: 24px 16px 64px; gap: 22px; }
+
+/* Firkantede hjørner overalt */
+.meters, .acc, .grp, .sem, .picker, .extform, .pcats, .pg, .ms, .rule, .card, .bpick, .btn, .lang, .rmb, .wish,
+.todo, .clash, .find input, .extform input[type="text"], .picker .find select, .si select, .num input, textarea,
+.fchip, .chip, .tag, .sea, .rmark, .cn, .tabbadge, .fchip .cnt, .crs, .track, .fill, .mrow2 .mbar, .acch.warnacc .n { border-radius: var(--r); }
+
+/* ---------- Hoved ---------- */
+.top { gap: 10px; padding-bottom: 18px; border-bottom: 6px solid var(--bar); }
+.toprow { align-items: flex-end; }
+.toprow > h1 { flex: 1 1 auto; }
+.top h1 {
+  font: 800 clamp(26px, 5.4vw, 46px)/0.95 var(--display); font-stretch: 112%;
+  letter-spacing: -0.035em; text-transform: uppercase; overflow-wrap: anywhere; min-width: 0; max-width: 100%;
+  display: flex; align-items: flex-start; gap: 0.22em;
+}
+.top h1::before { content: ""; flex: none; width: 0.62em; height: 0.62em; margin-top: 0.12em; background: var(--signal); }
+.top p { font-size: 17px; line-height: 1.45; color: var(--ink); max-width: 58ch; }
+.lang { border: 2px solid var(--rule); background: var(--surface); }
+.lang button { font: 600 12px var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); padding: 6px 12px; }
+.lang button + button { border-left: 2px solid var(--rule); }
+.lang button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+/* ---------- Trin-faner ---------- */
+.tabs { display: flex; gap: 0; border: 2px solid var(--rule); background: var(--surface); }
+.step {
+  position: relative; flex: 1 1 0; justify-content: flex-start; gap: 10px; padding: 10px 12px; min-height: 52px;
+  border: 0; border-left: 2px solid var(--rule); color: var(--ink); font: 600 14px var(--body); text-align: left;
+}
+.step:first-child { border-left: 0; }
+.step .sn { width: auto; height: auto; border-radius: 0; background: none; color: var(--muted); font: 600 13px var(--mono); }
+.step .sn::before { content: "0"; }
+.step:not(:disabled):not([aria-current]):hover { background: var(--accent-soft); box-shadow: inset 0 -4px 0 var(--signal); }
+.step[aria-current] { background: var(--ink); color: var(--bg); border-bottom: 0; }
+.step[aria-current] .sn { background: none; color: var(--on-ink-accent); }
+.step:disabled { opacity: 1; color: var(--muted); background: var(--surface); font-weight: 500; }
+.step .tabbadge { margin-left: auto; }
+
+/* ---------- Trinoverskrift ---------- */
+.eyebrow { display: flex; align-items: center; gap: 8px; font: 600 12px var(--mono); letter-spacing: 0.06em; color: var(--ink); margin-bottom: 8px; }
+.eyebrow::before { content: ""; width: 10px; height: 10px; background: var(--signal); flex: none; }
+.panel > h2, #start h2 { font: 800 clamp(28px, 5vw, 40px)/1.02 var(--display); letter-spacing: -0.03em; margin-bottom: 10px; }
+.lede { font-size: 16px; color: var(--ink); opacity: 1; max-width: 58ch; margin-bottom: 18px; }
+.sech { font: 800 22px var(--display); letter-spacing: -0.02em; margin: 26px 0 6px; }
+
+/* ---------- ECTS-tæller: plakatens blikfang ---------- */
+.meters { background: var(--inv-bg); color: var(--inv-ink); border: 2px solid var(--rule); padding: 16px 18px 14px; }
+.mrow { gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.mrow .tv { font: 800 clamp(56px, 13vw, 88px)/0.85 var(--display); font-stretch: 85%; letter-spacing: -0.04em; color: var(--signal); }
+.mrow .tl { font: 600 13px var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--inv-ink); }
+/* Bjælken = 180 ECTS, delt i 6 felter à 30 ECTS (ét pr. semester). Hakkene skærer også gennem den orange fyldning. */
+.mrow::after { content: "6 × 30 ECTS"; margin-left: auto; align-self: flex-end; font: 600 11px var(--mono); letter-spacing: 0.04em; color: var(--inv-muted); }
+.track { height: 16px; margin-top: 14px; border: 2px solid var(--inv-ink); position: relative; background: var(--inv-bg); }
+.track::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0 calc(100% / 6 - 2px), var(--inv-tick) calc(100% / 6 - 2px) calc(100% / 6));
+}
+.fill { background: var(--signal); }
+.fill.full { background: var(--ok); }
+.msub {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 14px;
+  border-top: 1px solid var(--inv-line); font: 500 12.5px/1.35 var(--body); color: var(--inv-muted);
+}
+.msub > span { display: flex; align-items: center; gap: 7px; padding: 8px 10px 0 0; color: var(--inv-ink); white-space: nowrap; }
+.msub > span + span { padding-left: 10px; border-left: 1px solid var(--inv-line); }
+/* Afkrydsningsfelt: tom ramme = mangler endnu, orange felt med ✓ = opfyldt */
+.msub > span::before {
+  content: ""; flex: none; width: 13px; height: 13px; box-sizing: border-box; border: 2px solid var(--inv-muted);
+  display: inline-flex; align-items: center; justify-content: center; font: 900 10px/1 var(--body);
+}
+.msub .full { font-weight: 700; }
+.msub > .full::before { content: "✓"; background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
+:root .meters .msub .full { color: var(--inv-ink); }
+
+/* ---------- Knapper ---------- */
+.btn { background: var(--btn-bg); color: var(--btn-ink); border: 2px solid var(--btn-bg); padding: 9px 14px; font: 700 14px var(--body); letter-spacing: 0.01em; min-height: 40px; }
+.btn:hover { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+.btn-ghost:hover { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.btn-sm { padding: 5px 11px; font-size: 13px; min-height: 36px; }
+.linkbtn { color: var(--accent); font-weight: 600; min-height: 32px; }
+.rmb { border: 1.5px solid var(--field-line); color: var(--ink); font: 600 12px var(--body); }
+.rmb:hover { color: var(--bad); border-color: var(--bad); background: var(--bad-bg); }
+
+/* ---------- Start: bachelorgitter ---------- */
+.bgrid { gap: 0; padding: 0 2px 2px 0; }
+.bpick {
+  position: relative; margin: 0 -2px -2px 0; border: 2px solid var(--rule); background: var(--surface);
+  justify-content: center; padding: 10px 40px 10px 14px; gap: 4px; min-height: 56px; font: 600 15.5px/1.25 var(--body); letter-spacing: -0.01em;
+}
+.bpick::after { content: "→"; position: absolute; right: 14px; top: 50%; margin-top: -0.65em; font: 600 16px/1.3 var(--mono); color: var(--muted); transition: transform 0.12s; }
+.bpick:hover { z-index: 1; background: var(--accent-soft); border-color: var(--rule); box-shadow: inset 4px 0 0 var(--signal); }
+.bpick:hover::after { color: var(--ink); transform: translateX(3px); }
+.bpick.cur, .bpick.cur:hover { z-index: 1; background: var(--signal); border-color: var(--rule); color: var(--signal-ink); }
+.bpick.cur::after { color: var(--signal-ink); }
+.bpick.cur, .bpick.cur:hover { box-shadow: none; }
+.bpick:focus-visible { z-index: 2; }
+.bpick:disabled, .bpick:disabled:hover { background: var(--bg); border-color: var(--rule); color: var(--muted); box-shadow: none; }
+.upick .bn { font: 800 28px var(--display); letter-spacing: -0.03em; }
+h3.uni { font: 600 12px var(--mono); letter-spacing: 0.06em; color: var(--ink); margin: 26px 0 8px; display: flex; align-items: center; gap: 8px; }
+h3.uni::after { content: ""; flex: 1; height: 2px; background: var(--rule); }
+@media (prefers-reduced-motion: reduce) { .bpick::after { transition: none; } }
+
+/* ---------- Harmonikaer, kort, grupper ---------- */
+.acc, .grp, .card, .picker, .extform, .ms { border: 2px solid var(--rule); }
+.acch { min-height: 48px; font: 600 15px var(--body); border-top: 1.5px solid var(--line); }
+.acch:hover, .pcat:hover, .crs:hover { background: var(--accent-soft); box-shadow: inset 4px 0 0 var(--signal); }
+.acch .n, .pgn, .gsum, .rprog { font-family: var(--mono); font-weight: 600; color: var(--ink); }
+/* Advarsel = orange ramme + orange mono-tekst (ingen gul flade); opfyldt = grøn flade */
+.acch.warnacc .n, .chip-mangler, .rule-no .rmark, .gsum.over { background: transparent; color: var(--warn); box-shadow: inset 0 0 0 1.5px var(--warn); }
+.acch.warnacc .n { padding: 2px 8px; font-weight: 700; }
+.chev, .acch .chev, .semh .chev, .pgbtn .chev, .pcat .chev { color: var(--ink); font-weight: 700; }
+.grp h3 { font-size: 17px; }
+.card h3 { font: 800 19px var(--display); letter-spacing: -0.02em; }
+
+/* ---------- Semestre ---------- */
+.okline { display: inline-flex; align-items: center; gap: 6px; font: 600 12px var(--mono); letter-spacing: 0.02em; color: var(--ok); }
+.okline::before { content: "✓"; font-weight: 800; }
+.sems { gap: 0; }
+.sem { background: var(--surface); border: 2px solid var(--rule); margin-top: -2px; padding: 4px 14px 12px; }
+.sems > .sem:first-child { margin-top: 0; }
+.sem.hasclash { border-color: var(--bad); position: relative; z-index: 1; box-shadow: inset 4px 0 0 var(--bad); }
+.semh { font: 800 17px var(--display); letter-spacing: -0.015em; text-transform: uppercase; }
+.semh:hover .chev { color: var(--accent); }
+.sea { padding: 1px 6px; font: 600 12px/1.5 var(--mono); letter-spacing: 0.05em; text-transform: uppercase; vertical-align: 2px; }
+.sea-E { background: var(--au-bg); color: var(--au-ink); }
+.sea-F { background: var(--sp-bg); color: var(--sp-ink); }
+.sea-E::before { content: "◐ "; } .sea-F::before { content: "◑ "; }
+.gsum { font-size: 13px; }
+.gsum.over { padding: 0 6px; }
+.semsum { color: var(--muted); line-height: 1.6; }
+.semsum .snr { font: 600 12px var(--mono); color: var(--ink); }
+.semtr { border-style: dashed; }
+.si { border-top: 1.5px solid var(--line); padding: 9px 0; }
+.si .nr, .crs .nr, .pick .nr { font: 600 13px var(--mono); color: var(--ink); letter-spacing: -0.01em; }
+.si .nm { font-weight: 600; }
+.si .ec, .crs .ec, .pick .ec { font: 700 13px var(--mono); }
+.tag { padding: 0 6px; font: 600 12px/1.6 var(--mono); letter-spacing: 0.02em; background: var(--none-bg); color: var(--none); }
+.tag.tag-obl { background: var(--ink); color: var(--bg); }
+.tag.tag-ext, .tag.tag-ms { background: transparent; color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.tabbadge { background: var(--bad); color: var(--surface); border-radius: 0; font-weight: 700; }
+.clash { border-left: 4px solid var(--bad); }
+.todo { background: var(--surface); border: 2px solid var(--rule); border-left: 6px solid var(--warn); }
+.todo.bad { background: var(--bad-bg); border-left-color: var(--bad); }
+
+/* ---------- Tilføj kursus ---------- */
+.picker { background: var(--surface); padding: 12px 14px; }
+.pkh { font: 800 16px var(--display); letter-spacing: -0.015em; }
+.pklab { font: 600 11px var(--mono); letter-spacing: 0.06em; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.pklab::after { content: ""; flex: 1; height: 1.5px; background: var(--rule); }
+.find input, .extform input[type="text"], .picker .find select { border: 2px solid var(--field-line); padding: 9px 11px; min-height: 42px; }
+.find input:focus-visible, .extform input:focus-visible { border-color: var(--ink); }
+.pcats { border: 2px solid var(--rule); }
+.pcat { min-height: 44px; font-weight: 500; border-top: 1.5px solid var(--line); }
+.pcat[aria-expanded="true"] { background: var(--accent-soft); font-weight: 700; box-shadow: inset 6px 0 0 var(--ink); }
+.pcat[aria-expanded="true"] + .pcatb { border-top: 2px solid var(--ink); }
+/* "Hører til din uddannelse": sort bjælke med orange markør (lyst i mørk tilstand); orange flader er forbeholdt tæller og fokus. */
+.pcat.pcat-deg, .pcat.pcat-deg[aria-expanded="true"] { background: var(--ink); color: var(--bg); box-shadow: none; font-weight: 700; }
+.pcat.pcat-deg .dot { background: var(--on-ink-accent); border-radius: 0; width: 12px; height: 12px; }
+.pcat.pcat-deg .pgn, .pcat.pcat-deg .chev { color: var(--bg); }
+.pcat.pcat-deg:hover { box-shadow: inset 6px 0 0 var(--on-ink-accent); }
+.pcat .dot, .dot { border-radius: 0; width: 11px; height: 11px; }
+.pg-deg { background: var(--accent-soft); border-left: 4px solid var(--ink); }
+.pgdot { border-radius: 0; background: var(--signal); }
+.pgh { font-family: var(--display); font-weight: 700; }
+.pick { border-top: 1.5px solid var(--line); }
+.addb { border-radius: 0; border: 2px solid var(--ink); background: var(--surface); color: var(--ink); font: 700 20px/1 var(--mono); }
+.addb:hover { background: var(--signal); border-color: var(--ink); color: var(--signal-ink); }
+.crs input, .flag input { accent-color: var(--ink); }
+
+/* ---------- Kandidater ---------- */
+.chip { padding: 2px 8px; font: 600 11.5px/1.5 var(--mono); letter-spacing: 0.02em; text-transform: uppercase; }
+.fchip { border: 2px solid var(--rule); font-weight: 600; min-height: 34px; }
+.fchip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.fchip .cnt { background: var(--signal); color: var(--signal-ink); font-weight: 700; }
+.ms { border-left-width: 8px; margin-bottom: -2px; position: relative; }
+.ms.ms-sikker { border-left-color: var(--ok); } .ms.ms-opfyldt, .ms.ms-betinget { border-left-color: var(--info); }
+.ms.ms-maybe { border-left-color: var(--maybe); } .ms.ms-mangler { border-left-color: var(--warn); }
+h3.uni + .ms, .ms + h3.uni { margin-top: 22px; }
+.ms + :not(.ms) { margin-top: 12px; }
+.msname { font: 700 15.5px var(--display); letter-spacing: -0.01em; }
+.wish { border: 2px solid var(--field-line); width: 36px; height: 36px; color: var(--ink); }
+.wish[aria-pressed="true"] { background: var(--signal); border-color: var(--ink); color: var(--signal-ink); }
+.rule { border: 1.5px solid var(--line); }
+.rmark { font: 600 11px/1.6 var(--mono); text-transform: uppercase; letter-spacing: 0.03em; }
+
+/* ---------- Kandidatplan-målere ---------- */
+.mrow2 .mv { font-weight: 700; }
+.mrow2 .mv.ok { color: var(--ok); }
+.mrow2 .mbar { height: 8px; background: var(--line); }
+.mrow2.sub .mbar { height: 4px; }
+.mrow2 .mbar i { background: var(--signal); }
+
+/* ---------- Skema ---------- */
+.grid caption { font: 800 15px var(--display); }
+.grid td { border: 1.5px solid var(--line); }
+.cn { background: var(--accent-soft); font-weight: 600; }
+.chip, .rmark { font-size: 12px; }
+
+/* ---------- Fod ---------- */
+.foot { border-top: 6px solid var(--bar); padding-top: 14px; color: var(--muted); font-size: 12.5px; }
+.foot p:first-child { color: var(--ink); font-weight: 600; }
+
+/* ---------- Mobil ---------- */
+@media (max-width: 860px) {
+  .msub { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .msub > span:nth-child(3) { border-left: 0; padding-left: 0; }
+  .msub > span:nth-child(n+3) { border-top: 1px solid var(--inv-line); margin-top: 8px; }
+}
+@media (max-width: 520px) {
+  /* Én kategori pr. linje, så intet ombrydes */
+  .msub { grid-template-columns: minmax(0, 1fr); margin-top: 12px; }
+  .msub > span:nth-child(n) { padding: 7px 0; border-left: 0; margin-top: 0; white-space: normal; font-size: 13.5px; }
+  .msub > span:nth-child(n+2) { border-top: 1px solid var(--inv-line); }
+  .msub > span:last-child { padding-bottom: 0; }
+  .mrow::after { flex-basis: 100%; margin: 6px 0 -4px; text-align: left; }
+}
+/* Smalle skærme: inaktive trin viser kun nummeret, det aktive trin får hele navnet. Navnet bliver i tilgængelighedstræet. */
+@media (max-width: 760px) {
+  .step { flex: 1 1 0; flex-direction: row; align-items: center; min-width: 40px; justify-content: center; gap: 6px; padding: 8px 4px; min-height: 48px; font-size: 13.5px; }
+  .step .sn { font-size: 13px; }
+  .step:not([aria-current]) .sl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .step[aria-current] { flex: 0 0 auto; padding: 8px 14px; }
+  .step .tabbadge { margin-left: 0; }
+}
+@media (max-width: 380px) {
+  .step { min-width: 36px; gap: 5px; }
+  .step[aria-current] { padding: 8px 9px; }
+}
+@media (max-width: 520px) {
+  .page { padding: 16px 12px 48px; gap: 18px; }
+  .top { border-bottom-width: 5px; }
+  .top h1 { font-size: clamp(19px, 7.2vw, 28px); font-stretch: 84%; letter-spacing: -0.02em; }
+  .panel > h2, #start h2 { font-size: 28px; }
+  .bpick { min-height: 48px; padding: 9px 38px 9px 12px; font-size: 15px; }
+}
+
 </style>
 </head>
 <body data-view="start">
@@ -751,8 +1069,8 @@ KP.courses = KP.courses.concat([
   C("46030", "Elektriske energisystemer", "Electrical Energy Systems", 5, "valgfri", "BSc", "energi", [{ m: ["E1A"] }], { cat: 1 }),
   C("46035", "Energistyring med indlejrede systemer", "Energy Management with Embedded Systems", 5, "valgfri", "BSc", "energi", [{ p: ["jan"] }], { cat: 1 }),
   C("46040", "Introduktion til energianalyse", "Introduction to Energy Analytics", 5, "valgfri", "BSc", "energi", [{ m: ["F5A"] }], { cat: 1 }),
-  C("46045", "Koordineret styring af distribuerede energisystemer", "Design and Implementation of Coordinated Distributed Energy Systems", 5, "valgfri", "BSc", "energi", [{ p: ["jun"] }], { cat: 1 }),
-  C("46050", "Innovative energiløsninger", "Innovative Energy Solutions", 10, "valgfri", "BSc", "energi", [{ txt: NOTIME, s: "F" }], { cat: 1 }),
+  C("46045", "Design og implementering af koordineret styring for distribuerede energisystemer", "Design and Implementation of Coordinated Distributed Energy Systems", 5, "valgfri", "BSc", "energi", [{ p: ["jun"] }], { cat: 1 }),
+  C("46050", "Innovative energiløsninger", "Innovative Energy Solutions", 10, "valgfri", "BSc", "energi", [{ txt: B("januar og foråret efter", "January and the following spring"), s: "E", span: true }], { cat: 1 }),
   C("46055", "Almen elektroteknik", "General Electrical Engineering", 5, "valgfri", "BSc", "energi", [{ m: ["F1B"] }], { cat: 1 }),
   C("46060", "Projekt i design af hybridkraftværk", "Hybrid Power Plant Design Project", 5, "valgfri", "BSc", "energi", [{ p: ["jun"] }], { cat: 1 }),
   C("46795", "Formula Student Electric: implementering, test og designoptimering", "Formula Student Electric: Implementation, Testing and Design Optimization", 5, "valgfri", "BSc", "energi", [{ m: ["E4B"] }, { m: ["F4B"], n: "46797" }], { cat: 1 }),
@@ -906,7 +1224,7 @@ KP.courses = KP.courses.concat([
   C("28216", "Anvendt formuleringsvidenskab til belægninger", "Applied Formulation Science for Coatings", 5, "valgfri", "MSc", "proces", [{ m: ["F4A"] }], { cat: 1, pre: ["kt"] }),
   C("28244", "Forbrænding og højtemperaturprocesser", "Combustion and High Temperature Processes", 5, "valgfri", "MSc", "proces", [{ m: ["F5A"] }], { cat: 1, pre: ["tek"] }),
   C("28434", "Membranteknologi", "Membrane Technology", 5, "valgfri", "MSc", "proces", [{ m: ["F1A"] }], { cat: 1, pre: ["kt"] }),
-  C("28870", "Energi og bæredygtighed", "Energy and Sustainability", 5, "valgfri", "MSc", "proces", [{ txt: NOTIME, s: "E" }], { cat: 1, pre: ["be"] }),
+  C("28870", "Energi og bæredygtighed", "Energy and Sustainability", 5, "valgfri", "MSc", "proces", [{ txt: B("tirs 18-22", "Tue 18-22"), s: "E" }], { cat: 1, pre: ["be"] }),
   C("30021", "Digital instrumentering", "Digital Instrumentation", 5, "valgfri", "MSc", "el", [{ m: ["E4A"] }], { cat: 1, pre: ["geo"] }),
   C("30300", "Introduktion til satellitsystemer", "Introduction to Satellite Systems", 10, "valgfri", "MSc", "el", [{ m: ["E5A", "E5B"] }], { cat: 1, pre: ["geo"] }),
   C("30330", "Billedanalyse på mikrocomputer", "Image Analysis with Microcomputer", 10, "valgfri", "MSc", "el", [{ m: ["E1A", "E1B"] }, { m: ["E2A"] }], { cat: 1, pre: ["geo"] }),
@@ -1031,6 +1349,88 @@ KP.courses = KP.courses.concat([
 })();
 // </msc-plan>
 
+// <study>
+// Fulde studieplaner (fagblokke og valgregler) for de øvrige DTU-bachelorer, optag 2023 eller senere.
+// Kilde: student.dtu.dk/studieordninger/Bachelor/<retning>/studieplan, 12. november 2026.
+// grund: pladser i det polytekniske grundlag, "a|b" = ét af alternativerne. obl: obligatoriske retningsspecifikke kurser.
+// pools: [mindst ECTS, kurser, navn] = "vælg mindst N ECTS blandt" (kurserne tæller som retningsspecifikke). proj: fagprojekt (alternativer med |) og bachelorprojekt.
+// need: blokstørrelser, hvis de afviger fra 55/55/25/45.
+KP.courses = KP.courses.concat([
+  C("KU013", "Videnskabsteori (KU)", "Medical Science and Technology Studies (KU)", 5, "valgfri", "BSc", "sund", [{ p: ["jan"] }], { cat: 1, pf: 1 }),
+  C("10054", "Modelfysik", "Model Physics", 5, "valgfri", "BSc", "fys", [{ txt: NOTIME }], { cat: 1, pf: 1 })
+]);
+KP.studyAlias = { "26021": "26020", "26022": "26020", "42621": "42620", "42622": "42620", "01034": "01035", "01037": "01035", "02003": "02002", "26003": "26002", "26004": "26002", "34019": "34029" };
+KP.study = {};
+(function () {
+  var G = "01001 01002 02002 02402|02403 10060 26020 27020 42620";      // med 02403 som alternativ (am, el, mek)
+  var G0 = "01001 01002 02002 02402 10060 26020 27020 42620";           // kun 02402 (byg, bd, be, cy, di, ai)
+  function S(id, o) { KP.study[id] = o; }
+  S("am", { grund: G, obl: "01017 01025 02525 02526 02601 02635",
+    pools: [[20, "01018 01020 01125 01418 02405 02419 02503 02615 42101", B("Retningsspecifikke valgkurser (mindst 20 ECTS)", "Programme-specific electives (at least 20 ECTS)")],
+      [5, "01018 01020 01125", B("Mindst ét af 01018, 01020, 01125", "At least one of 01018, 01020, 01125")],
+      [5, "02405 02419", B("Mindst ét af 02405, 02419", "At least one of 02405, 02419")],
+      [5, "02615 42101", B("Mindst ét af 02615, 42101", "At least one of 02615, 42101")]],
+    proj: "01666 BACH" });
+  S("bio", { grund: "01001 01002 02002 02402 10060 26050 27002 42620", obl: "22111 26211 26400 27003 27022 27023 27026 27027 27051",
+    pools: [[5, "27034 28025", B("Mindst 5 ECTS blandt 27034 og 28025 (begge anbefales)", "At least 5 ECTS from 27034 and 28025 (both recommended)")],
+      [5, "27032 27035 27062 27064 27066", B("Mindst 5 ECTS blandt fem retningsspecifikke kurser (tag gerne flere som valgfag)", "At least 5 ECTS from five programme-specific courses (more are welcome as electives)")]],
+    proj: "22180 BACH" });
+  S("byg", { grund: G0, obl: "12605 41204 41903 41925 41954",
+    pools: [[25, "12411 12601 12603 12604 41102 41458 41927 41956 41957 41955", B("Mindst 25 ECTS blandt de øvrige retningsspecifikke kurser", "At least 25 ECTS from the other programme-specific courses")]],
+    proj: "41905 BACH",
+    note: B("For optag september 2023 er 12605 valgfrit, og 41955 tæller som retningsspecifikt kursus.", "For the September 2023 intake 12605 is optional, and 41955 counts as a programme-specific course.") });
+  S("bd", { grund: G0, obl: "01237 12605 41459 41925 41927 41928 41929 41953",
+    pools: [[10, "12601 12603 41458 41954", B("Mindst 10 ECTS blandt fire retningsspecifikke kurser", "At least 10 ECTS from four programme-specific courses")]],
+    proj: "41906 BACH" });
+  S("be", { grund: G0, obl: "46015 46020 46025 46030 46035 46040 46060",
+    pools: [[5, "47201 41045 34721", B("Termodynamik eller reguleringsteknik (mindst 5 ECTS)", "Thermodynamics or control engineering (at least 5 ECTS)")],
+      [10, "12143 34322 34620 46045 47211", B("Mindst to af fem retningsspecifikke kurser (10 ECTS)", "At least two of five programme-specific courses (10 ECTS)")]],
+    proj: "46050 BACH",
+    note: B("Tager du flere puljekurser end kravet, tæller de ekstra som valgfag. 41045 anbefales på 3. semester, 47201 og 34721 på 4. semester.", "If you take more pool courses than required, the extra ones count as electives. 41045 is recommended in semester 3, 47201 and 34721 in semester 4.") });
+  S("ce", { grund: "01001 01002 02100 02402|02403 10060 26020 27020 42620", obl: "02105 02112 02116 02138 02139 02155 02159 02161 22051 30015|34600",
+    pools: [], proj: "02123 BACH", split: { "02100": ["grund", "retn"] },
+    note: B("02100 (10 ECTS) tæller halvt i grundlaget og halvt som retningsspecifikt kursus.", "02100 (10 ECTS) counts half in the foundation and half as a programme-specific course.") });
+  S("cy", { grund: G0, obl: "01035 02105 34210 34302 34313 34334",
+    pools: [[20, "02161 02451 34120 34121 34220 34325 34331 34333 34600 30015", B("Retningsspecifikke valgkurser (mindst 20 ECTS)", "Programme-specific electives (at least 20 ECTS)")]],
+    proj: "34229 BACH" });
+  S("dsm", { grund: "01001 01002 02002 02402|02403 10060|10054 26020 27020 42620", obl: "02105 02170 02451 42009 42101 42421 42580 42587 42588",
+    pools: [[10, "02405 12202 41619 42010 42586 42894 63852", B("To kurser fra listen (10 ECTS)", "Two courses from the list (10 ECTS)")]],
+    proj: "42584 BACH",
+    note: B("Tager du 10054 Modelfysik (5 ECTS) i stedet for 10060 Fysik, er grundlaget 50 ECTS og de valgfrie kurser 50 ECTS.", "If you take 10054 Model Physics (5 ECTS) instead of 10060 Physics, the foundation is 50 ECTS and the electives 50 ECTS.") });
+  S("di", { grund: G0, obl: "41011 41012 41013 41028 41029 41031 41046 41051 41612 41615", pools: [], proj: "41020 BACH",
+    need: { proj: 30, valg: 40 }, note: B("41612 Produktkonstruktion og dokumentation svarer til fagprojektet og skal være bestået, før bachelorprojektet.", "41612 Product Design and Documentation corresponds to the project course and must be passed before the bachelor project.") });
+  S("el", { grund: G, obl: "02138 02139|01035 22050 22051 30010 30400 34600 34601 34602 34721", pools: [], proj: "34720 BACH" });
+  S("fys", { grund: "01001 01002 02002 02402 10033 26020 27020 42620", obl: "01035 10031 10034 10035 10036 10102 10317 34020", pools: [], proj: "34029 BACH" });
+  S("geo", { grund: "01001 01002 02002 02402 10033 26020 27020 42620", obl: "01035 10034 30015|34600 30101 30102 30121 30131 30160 30400|10036",
+    pools: [[5, "30010 30020 30142 30150", B("Mindst 5 ECTS blandt fire retningsspecifikke kurser", "At least 5 ECTS from four programme-specific courses")]],
+    proj: "30110 BACH" });
+  S("kt", { grund: "01001 01002 02002 02402|02403 10060 26001 27020 42620", obl: "",
+    pools: [[55, "26002 26008 26124 26200 26220 26300 26400 26411 28010 28020 28140 28150 28160", B("Retningsspecifikke kurser (mindst 55 ECTS)", "Programme-specific courses (at least 55 ECTS)")]],
+    proj: "26010 BACH" });
+  S("ai", { grund: G0, obl: "02105 02182 02445 02451 02461 02462 02463 02464 02465",
+    pools: [[5, "02467 02820", B("Mindst 5 ECTS blandt 02467 og 02820", "At least 5 ECTS from 02467 and 02820")]],
+    proj: "02466 BACH" });
+  S("lst", { grund: "01001 01002 02002 02402 10060 26050 27002 42620", obl: "22111 23214 26211 26400 27022 27023 27026",
+    pools: [[20, "22100 22116 22140 22208 23220 23732 26411 26426 27027 27034 27035 27051 27062 27070 28025", B("Retningsspecifikke valgkurser (mindst 20 ECTS)", "Programme-specific electives (at least 20 ECTS)")]],
+    proj: "22180 BACH" });
+  S("med", { grund: "01001 01002 02002 02402|02403 10060 26020 27020|KU005 42620|KU013", obl: "KU002 KU003 01035 22050 22460 22461",
+    pools: [[7.5, "KU010 KU011", B("Semi-obligatoriske KU-kurser (7,5-10 ECTS)", "Semi-mandatory KU courses (7.5-10 ECTS)")]],
+    proj: "22462|KU004+KU006 BACH" });
+  S("mek", { grund: G, obl: "41000 41312 41501 41603 41659 41714",
+    pools: [[15, "41401 41045 41502 41511 41564 41619 41789 41814", B("Mindst 15 ECTS fra listen", "At least 15 ECTS from the list")]],
+    proj: "41801 BACH" });
+  S("sw", { grund: "01001 01002 02100 02402|02403 10060 26020 27020 42620", obl: "01017 02104 02105 02132 02141 02157 02161",
+    pools: [[5, "02155 02156 02159", B("Mindst 5 ECTS blandt 02155, 02156 og 02159", "At least 5 ECTS from 02155, 02156 and 02159")]],
+    proj: "02122 BACH", split: { "02100": ["grund", "retn"] },
+    note: B("02100 (10 ECTS) tæller halvt i grundlaget og halvt som retningsspecifikt kursus.", "02100 (10 ECTS) counts half in the foundation and half as a programme-specific course.") });
+  S("tbm", { grund: "01001 01002 02002 02402 10060 26050 27002 42620", obl: "22213 23214 23256 26400 27026 27030",
+    pools: [[25, "22100 22111 22116 22118 22140 22208 22285 23220 23732 25106 26411 26426 27027 27070", B("Retningsspecifikke valgkurser (mindst 25 ECTS)", "Programme-specific electives (at least 25 ECTS)")]],
+    proj: "22180 BACH" });
+  S("tek", { grund: "01001 01002 02002 02402 10065 26800 27021 42620", obl: "01035 26805 26820 26840 28021 28145 47213 47214 47216 47217", pools: [], proj: "46060 47215 BACH",
+    need: { proj: 25 } });
+})();
+// </study>
+
 // Studieplaner for de øvrige DTU-bachelorer (optag 2023 eller senere): obligatoriske kurser med semestret fra DTU's første anbefalede studieforløb.
 // "id:semester"; uden semester lægges kurset efter årstid. retn = puljekurser, der står i alle retningens anbefalede forløb. auto = retningen har ikke et forløb med semestre.
 // Kilde: student.dtu.dk/studieordninger/Bachelor/<retning>/studieplan og .../anbefalede-studieforloeb, 12. november 2026 (research/dtu_plans.md).
@@ -1052,7 +1452,7 @@ KP.plans = {};
   P("bio", "01001:1 01002:2 02002:1 02402:4 10060:2 26050:1 27002:1 42620:5 22111:3 26211:4 26400:2 27003:1 27022:2 27023:2 27026:3 27027:3 27051:4 22180:3 BACH:6", "27034:4 28025:4", false, "27034 28025 27032 27035 27062 27064 27066");
   P("byg", "01001:1 01002:2 02002:1 02402:3 10060:2 26020:5 27020:6 42620:5 12605:3 41204:2 41903:1 41925:1 41954:3 41905:4 BACH:6", "12411:4 12603:2 12604:2 41102:3 41927:4 41956:4 41957:5", false, "12411 12601 12603 12604 41102 41458 41927 41956 41957 41955");
   P("bd", "01001:1 01002:2 02002:1 02402:4 10060:2 26020:4 27020:6 42620:3 01237:3 12605:3 41459:2 41925:1 41927:4 41928:1 41929:2 41953:2 41906:4 BACH:6", "", false, "12601 12603 41458 41954");
-  P("be", G + "27020:5 02002:1 46015 46020 46025 46030 46035 46040 46060 46050:6 BACH:6", "", true, "47201 41045 34721 12143 34322 34620 46045 47211");
+  P("be", G + "27020:5 02002:1 46015 46020 46025 46030 46035 46040 46060 46050:5 BACH:6", "", true, "47201 41045 34721 12143 34322 34620 46045 47211");
   P("ce", "01001:1 01002:2 02100:1 02402:4 10060:2 26020:3 27020:5 42620:5 02105:2 02112:1 02116:5 02138:1 02139:2 02155:3 02159:5 02161:4 22051:3 34600:3 02123:4 BACH:6", "");
   P("cy", "01001:1 01002:2 02002:1 02402:3 10060:2 26020:4 27020:6 42620:5 01035:3 02105:2 34210:4 34302:1 34313:1 34334:3 34229:4 BACH:6", "34220:2 34333:2", false, "02161 02451 34120 34121 34220 34325 34331 34333 34600 30015");
   P("dsm", G + "02002:1 02105 02170 02451 42009 42101 42421 42580 42587 42588 42584:4 BACH:6", "", true, "02405 12202 41619 42010 42586 42894 63852");
@@ -1923,7 +2323,55 @@ var KPE = (function () {
     return p;
   }
 
-  function summarize(KP, has, other) {
+  // Fuldt ECTS-regnskab for bachelorer med KP.study (alle undtagen Miljøteknologi, der bruger kursernes roller nedenfor).
+  // Hver plads i grundlaget og hvert fagprojekt er "a|b|c+d" (alternativer, + = flere kurser sammen). Kurser uden for blokkene er valgfrie.
+  function slots(str, alias) {
+    return (str || "").split(/\s+/).filter(Boolean).map(function (s) {
+      return s.split("|").map(function (alt) { return alt.split("+").map(function (id) { return alias[id] || id; }); });
+    });
+  }
+  function summarizeStudy(KP, b, has, other) {
+    var S = KP.study[b], A = KP.studyAlias || {}, need = { grund: 55, retn: 55, proj: 25, valg: 45 }, k;
+    for (k in (S.need || {})) need[k] = S.need[k];
+    var G = slots(S.grund, A), O = slots(S.obl, A), P = slots(S.proj, A), grp = {};
+    G.forEach(function (sl) { sl.forEach(function (alt) { alt.forEach(function (id) { grp[id] = "grund"; }); }); });
+    P.forEach(function (sl) { sl.forEach(function (alt) { alt.forEach(function (id) { grp[id] = grp[id] || "proj"; }); }); });
+    O.forEach(function (sl) { sl.forEach(function (alt) { alt.forEach(function (id) { grp[id] = grp[id] || "retn"; }); }); });
+    (S.pools || []).forEach(function (p) { p[1].split(/\s+/).filter(Boolean).forEach(function (id) { id = A[id] || id; grp[id] = grp[id] || "retn"; }); });
+    var r = { study: true, need: need, grund: 0, retn: 0, proj: 0, valgRaw: 0, beng: 0, all: 0, np: [], warn: [] };
+    KP.courses.forEach(function (c) {
+      if (!has.has(c.id)) return;
+      r.all += c.ects;
+      var g = grp[c.id], sp = S.split && S.split[c.id];
+      if (sp) sp.forEach(function (x) { r[x] += c.ects / sp.length; });
+      else if (g) r[g] += c.ects;
+      else if (c.np || (c.level === "MSc" && !(c.pre && c.pre.indexOf(b) >= 0))) r.np.push(c.nr);
+      else { r.valgRaw += c.ects; if (c.level === "BEng") r.beng += c.ects; }
+    });
+    var done = function (alt) { return alt.every(function (id) { return has.has(id); }); };
+    var missing = function (list) { return list.filter(function (sl) { return !sl.some(done); }).map(function (sl) { return sl.map(function (alt) { return alt.map(function (id) { var c = byId[id]; return c ? c.nr : id; }).join(" + "); }).join(" / "); }); };
+    var over = Math.max(0, r.grund - need.grund) + Math.max(0, r.retn - need.retn) + Math.max(0, r.proj - need.proj);
+    r.other = Math.max(0, Number(other) || 0);
+    r.valg = r.valgRaw + r.other + over;
+    r.total = Math.min(r.grund, need.grund) + Math.min(r.retn, need.retn) + Math.min(r.proj, need.proj) + Math.min(r.valg, need.valg);
+    var mg = missing(G), mo = missing(O), mp = missing(P);
+    if (mg.length) r.warn.push(["s_grund", mg.join(", ")]);
+    if (mo.length) r.warn.push(["s_obl", mo.join(", ")]);
+    (S.pools || []).forEach(function (p) {
+      if (!p[0]) return;
+      var got = 0; p[1].split(/\s+/).filter(Boolean).forEach(function (id) { id = A[id] || id; if (has.has(id)) got += byId[id] ? byId[id].ects : 0; });
+      if (got < p[0]) r.warn.push(["s_pool", p[2], got, p[0]]);
+    });
+    if (r.retn < need.retn) r.warn.push(["s_retn", r.retn, need.retn]);
+    if (mp.length) r.warn.push(["s_proj", mp.join(", ")]);
+    if (r.beng > 10) r.warn.push(["w_beng", r.beng]);
+    if (r.valg > need.valg) r.warn.push(["s_valg", r.valg, need.valg]);
+    else if (r.valg < need.valg) r.warn.push(["s_valgMiss", need.valg - r.valg, need.valg]);
+    if (r.np.length) r.warn.push(["w_np", r.np.join(", ")]);
+    return r;
+  }
+  function summarize(KP, has, other, b) {
+    if (b && KP.study && KP.study[b]) return summarizeStudy(KP, b, has, other);
     var r = { grund: 0, obl: 0, g2: 0, g3: 0, proj: 0, valgRaw: 0, beng: 0, all: 0, np: [] };
     KP.courses.forEach(function (c) {
       if (!has.has(c.id)) return;
@@ -1950,6 +2398,7 @@ var KPE = (function () {
     if (r.beng > 10) r.warn.push(["w_beng", r.beng]);
     if (r.valg > 45) r.warn.push(["w_valg", r.valg]);
     if (r.np.length) r.warn.push(["w_np", r.np.join(", ")]);
+    r.need = { grund: 55, retn: 55, proj: 25, valg: 45 };
     return r;
   }
 
@@ -2138,7 +2587,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     lMs: ["Vælg en kandidat, og læg dens kurser i fire semestre. Siden holder regnskab med de fire blokke: polyteknisk grundlag, retningsspecifikke kurser, valgfrie kurser og speciale.", "Pick a master's programme and place its courses in four semesters. The page keeps count of the four blocks: polytechnical foundation, programme-specific courses, electives and thesis."],
     msPick: ["Hvilken kandidat vil du planlægge?", "Which master's do you want to plan?"],
     msMore: ["Indtil videre er kun Miljøteknologi lagt ind. De andre kandidater kommer senere.", "So far only Environmental Engineering has been entered. The other programmes come later."],
-    msCur: ["Officielt curriculum", "Official curriculum"], msClear: ["Fjern kandidatplanen", "Remove the master's plan"], msClear2: ["Tryk igen for at fjerne", "Press again to remove"],
+    msCur: ["Officiel studieordning", "Official curriculum"], msClear: ["Fjern kandidatplanen", "Remove the master's plan"], msClear2: ["Tryk igen for at fjerne", "Press again to remove"],
     msBlocks: ["Sådan er kandidaten bygget op", "How the master's is built"], msPf: ["Polyteknisk grundlag", "Polytechnical foundation"], msPs: ["Retningsspecifikke kurser", "Programme-specific courses"],
     msEl: ["Valgfrie kurser", "Electives"], msTh: ["Speciale", "Master's thesis"], msTot: ["I alt", "Total"],
     msElNote: ["Alle kandidatkurser kan være valgfrie; højst {n} ECTS må være bachelorkurser.", "Any master's course can be an elective; at most {n} ECTS may be bachelor courses."],
@@ -2158,7 +2607,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     gCan: ["Du kan søge", "You can apply"], gMiss: ["Mangler kurser", "Missing courses"],
     nSel: ["{n} valgt", "{n} selected"], subAll: ["Vis alle {n} kurser", "Show all {n} courses"], subLess: ["Vis færre", "Show fewer"],
     more: ["Viser de første {n}. Skriv mere for at indsnævre.", "Showing the first {n}. Type more to narrow it down."],
-    pointNote: ["Tjek pointspærring i kursusbasen, før du vælger to kurser, der ligner hinanden.", "Check for mutually exclusive courses in the course base before you choose two that look alike."],
+    pointNote: ["To kurser kan have pointspærring, så du kun kan få ECTS for det ene. Tjek det i kursusbasen, før du vælger to kurser, der ligner hinanden.", "Two courses can exclude each other, so you only get ECTS for one of them. Check the course base before you choose two that look alike."],
     showGrid: ["Vis ugeskema", "Show weekly schedule"], hideGrid: ["Skjul ugeskema", "Hide weekly schedule"],
     saveBtn: ["Gem eller del planen", "Save or share the plan"],
     pickUniTitle: ["Hvor læser du?", "Where do you study?"], pickUniLead: ["Vælg dit universitet.", "Choose your university."],
@@ -2175,7 +2624,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     addSemX: ["Tilføj et ekstra semester", "Add an extra semester"], rmSemX: ["Fjern {n}. semester", "Remove semester {n}"], tagExtra: ["ekstra", "extra"],
     w_np: ["{0} er et kandidatkursus, der ikke står på din retnings liste over forhåndsgodkendte kurser. Det tæller ikke med i bacheloren uden dispensation.", "{0} is a master's course that is not on your programme's list of pre-approved courses. It does not count towards the bachelor without an exemption."],
     tagNp: ["ikke forhåndsgodkendt", "not pre-approved"], tagPre: ["forhåndsgodkendt", "pre-approved"],
-    addCourse: ["Tilføj kursus", "Add course"], closeAdd: ["Luk", "Close"], remove: ["Fjern", "Remove"], rmA: ["Fjern {c}", "Remove {c}"], addA: ["Tilføj {c}", "Add {c}"],
+    addCourse: ["Tilføj kursus", "Add course"], closeAdd: ["Luk kursuslisten", "Close the course list"], remove: ["Fjern", "Remove"], rmA: ["Fjern {c}", "Remove {c}"], addA: ["Tilføj {c}", "Add {c}"],
     fLabel: ["Vis", "Show"], fAll: ["Alle kurser", "All courses"], fReq: ["Tæller i adgangskrav", "Counts in admission requirements"],
     pickShown: ["Viser {a} af {b} kurser, der udbydes i dette semester.", "Showing {a} of {b} courses offered in this semester."], pickMore: ["Vis flere", "Show more"],
     pickClash: ["Samme tidspunkt som {c}", "Same time as {c}"],
@@ -2196,7 +2645,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     pgFreeCat: ["Alle andre kurser, samlet i fagområder. Åbn et fagområde for at se, hvad der udbydes i dette semester. De tæller i blokken med valgfrie kurser.", "All other courses, grouped by subject area. Open an area to see what is offered in this semester. They count in the block of free electives."],
     pgAll: ["Kurser efter fagområde", "Courses by subject area"], pgAllCat: ["Åbn et fagområde for at se, hvad der udbydes i dette semester.", "Open a subject area to see what is offered in this semester."],
     pickTotal: ["{n} kurser udbydes i dette semester og er ikke i din plan endnu.", "{n} courses are offered in this semester and are not in your plan yet."],
-    fDeg: ["Hører til uddannelsen", "Part of the degree"], fFree: ["Valgfrie kurser", "Free electives"], move: ["Flyt", "Move"], moveA: ["Flyt {c} til et andet semester", "Move {c} to another semester"], moveTo: ["til {n}. semester ({s})", "to semester {n} ({s})"], tagG2: ["gruppe 2", "group 2"], tagG3: ["gruppe 3", "group 3"],
+    fDeg: ["Hører til uddannelsen", "Part of the degree"], fFree: ["Valgfrie kurser", "Free electives"], move: ["Flyt", "Move"], moveA: ["Flyt {c} til et andet semester", "Move {c} to another semester"], moveTo: ["til {n}. semester ({s})", "to semester {n} ({s})"], tagG2: ["vælg mindst 5 ECTS", "pick at least 5 ECTS"], tagG3: ["retningsspecifikt valg", "programme-specific choice"],
     wishNote: ["Kurserne lægges automatisk i et semester. Du kan flytte dem i trin 2.", "The courses are placed in a semester automatically. You can change that in step 2."],
     toSem: ["Se semesterplanen", "See the semester plan"],
     lead: ["For bachelorstuderende på DTU. Vælg din bachelor, læg din semesterplan, og se hvilke kandidater du kan søge, og hvilke valgfag de kræver.", "For bachelor students at DTU. Pick your bachelor, build your semester plan, and see which master's programmes you can apply for and which electives they require."],
@@ -2217,9 +2666,16 @@ if (typeof module !== "undefined") module.exports = KPE;
     todo: ["Mangler i din bachelor", "Missing in your bachelor"],
     w_grund: ["Polyteknisk grundlag skal være 55 ECTS. Du har {0}.", "The polytechnical foundation must be 55 ECTS. You have {0}."],
     w_obl: ["De tre obligatoriske retningsspecifikke kurser (25 ECTS) skal med.", "The three mandatory programme-specific courses (25 ECTS) must be included."],
-    w_g2: ["Vælg mindst 5 ECTS fra gruppe 2.", "Choose at least 5 ECTS from group 2."],
+    w_g2: ["Vælg mindst 5 ECTS fra gruppe 2 (kurserne mærket \"vælg mindst 5 ECTS\").", "Choose at least 5 ECTS from group 2 (the courses marked \"pick at least 5 ECTS\")."],
     w_retn: ["Retningsspecifikke kurser skal være mindst 55 ECTS. Du har {0}.", "Programme-specific courses must be at least 55 ECTS. You have {0}."],
     w_proj: ["Projekter skal være 25 ECTS (fagprojekt og bachelorprojekt).", "Projects must be 25 ECTS (the project course and the bachelor project)."],
+    s_grund: ["Polyteknisk grundlag mangler: {0}.", "Polytechnical foundation missing: {0}."],
+    s_obl: ["Obligatoriske retningsspecifikke kurser mangler: {0}.", "Mandatory programme-specific courses missing: {0}."],
+    s_pool: ["{0}: du har {1} af {2} ECTS.", "{0}: you have {1} of {2} ECTS."],
+    s_retn: ["Retningsspecifikke kurser skal være mindst {1} ECTS. Du har {0}.", "Programme-specific courses must be at least {1} ECTS. You have {0}."],
+    s_proj: ["Projekter mangler: {0}.", "Projects missing: {0}."],
+    s_valg: ["Du har valgt {0} ECTS valgfag. Kun {1} indgår i bacheloren.", "You have selected {0} ECTS of electives. Only {1} count towards the bachelor."],
+    s_valgMiss: ["Du mangler {0} ECTS valgfag for at nå {1}. Vælg dem frit blandt DTU's kurser.", "You still need {0} ECTS of electives to reach {1}. Choose them freely among DTU's courses."],
     w_beng: ["Højst 10 ECTS diplomkurser må indgå. Du har valgt {0}.", "At most 10 ECTS of BEng courses may be included. You have selected {0}."],
     w_valg: ["Du har valgt {0} ECTS valgfag. Kun 45 indgår i bacheloren.", "You have selected {0} ECTS of electives. Only 45 count towards the bachelor."],
     fixed: ["Obligatoriske kurser", "Mandatory courses"],
@@ -2228,7 +2684,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     g2: ["Gruppe 2", "Group 2"], g2r: ["vælg mindst 5 ECTS", "choose at least 5 ECTS"],
     g3: ["Gruppe 3", "Group 3"], g3r: ["vælg, så du når 55 ECTS retningsspecifikke", "choose to reach 55 ECTS programme-specific"],
     elect: ["Valgfag", "Electives"],
-    electLead: ["Du har 45 ECTS valgfag og kan vælge frit blandt DTU's bachelorkurser. Åbn et fagområde, eller søg.", "You have 45 ECTS of electives and can choose freely among DTU's bachelor courses. Open a subject area, or search."],
+    electLead: ["Du har {V} ECTS valgfag og kan vælge frit blandt DTU's bachelorkurser. Åbn et fagområde, eller søg.", "You have {V} ECTS of electives and can choose freely among DTU's bachelor courses. Open a subject area, or search."],
     qLabel: ["Søg kursus", "Search courses"], qPh: ["Søg på navn eller kursusnummer", "Search by name or course number"],
     catShow: ["Vis alle {n} kurser", "Show all {n} courses"], catHide: ["Vis kun de mest relevante", "Show only the most relevant"],
     noHit: ["Ingen kurser passer til søgningen.", "No courses match the search."], hits: ["{n} kurser fundet", "{n} courses found"],
@@ -2236,11 +2692,11 @@ if (typeof module !== "undefined") module.exports = KPE;
     otherKU: ["Kurser på KU, CBS eller et andet universitet kan også tælle som valgfag, hvis DTU forhåndsgodkender dem. Søg i merit.dtu.dk, før du tilmelder dig; behandlingen kan tage op til otte uger. Skriv deres ECTS her. Hos CBS kan de også tælle i fagkravene: skriv dem som suppleringsfag ved den enkelte kandidat.", "Courses at KU, CBS or another university can also count as electives if DTU pre-approves them. Apply in merit.dtu.dk before you register; processing can take up to eight weeks. Enter their ECTS here. At CBS they can also count in the subject requirements: enter them as supplementary courses at the individual programme."],
     allSubj: ["Alle", "All"], allCourses: ["Kurser efter fagområde", "Courses by subject"],
     other: ["Andre valgfag og kurser uden for DTU", "Other electives and courses outside DTU"],
-    otherLead: ["Tager du valgfag, der ikke står på listen, så skriv deres samlede ECTS her. De tæller med i de 45 ECTS, men ikke i adgangskrav.", "If you take electives that are not listed, enter their total ECTS here. They count towards the 45 ECTS but not towards admission requirements."],
+    otherLead: ["Tager du valgfag, der ikke står på listen, så skriv deres samlede ECTS her. De tæller med i dine {V} ECTS valgfag, men ikke i adgangskrav.", "If you take electives that are not listed, enter their total ECTS here. They count towards your {V} ECTS of electives but not towards admission requirements."],
     inReq: ["Krav til {m}", "Required for {m}"],
     tagMsc: ["kandidatkursus", "master's course"], tagBeng: ["diplom", "BEng"], tagMaybe: ["tæller måske", "may count"],
     eller: [" eller ", " or "], jan: ["januar", "January"], jun: ["juni", "June"], aug: ["august", "August"],
-    hMasters: ["Se dine kandidater", "See your master's options"],
+    hMasters: ["Hvilke kandidater kan du søge?", "Which master's programmes can you apply for?"],
     lMasters: ["Tryk på en kandidat for at se kravene. Stjernen gemmer den som ønske.", "Press a programme to see the requirements. The star saves it as a wish."],
     nSikker: ["{n} med adgang", "{n} with admission"], nOpfyldt: ["{n} krav opfyldt", "{n} requirements met"], nMaybe: ["{n} skal bekræftes", "{n} to be confirmed"], nMangler: ["{n} mangler krav", "{n} missing requirements"], nBetinget: ["{n} kræver bestemte kurser", "{n} need specific courses"],
     cRet: ["Retskrav", "Legal right"], cDir: ["Direkte adgang", "Direct admission"], cKU: ["Opfylder kravene", "Meets the requirements"],
@@ -2276,11 +2732,11 @@ if (typeof module !== "undefined") module.exports = KPE;
     notOnLead: ["Kandidater, hvor din bachelor ikke står på listen. Du kan søge, men bliver vurderet individuelt.", "Programmes where your bachelor is not on the list. You can apply but will be assessed individually."],
     hPlan: ["Hvad kræver dine ønsker?", "What do your wishes require?"], wishes: ["Mine ønsker", "My wishes"],
     noWish: ["Ingen ønsker endnu. Tryk på stjernen ved en kandidat i trin 3, så viser planen, hvilke kurser den kræver.", "No wishes yet. Press the star next to a programme in step 3, and the plan shows which courses it requires."],
-    need: ["Kurser, der mangler for at holde dem åbne", "Courses missing to keep them open"], reqBy: ["Kræves af {m}", "Required by {m}"],
-    budget: ["Med dem i planen bruger du {a} af 45 ECTS valgfag og har {b} af 55 ECTS retningsspecifikke.", "With these in your plan you use {a} of 45 ECTS of electives and have {b} of 55 ECTS programme-specific."],
+    need: ["Kurser, du mangler for at kunne søge dem", "Courses you are missing to be able to apply"], reqBy: ["Kræves af {m}", "Required by {m}"],
+    budget: ["Med dem i planen bruger du {a} af {V} ECTS valgfag og har {b} af {R} ECTS retningsspecifikke.", "With these in your plan you use {a} of {V} ECTS of electives and have {b} of {R} ECTS programme-specific."],
     budgetOver: [" Det er flere valgfag, end bacheloren har plads til, så du må vælge mellem dine ønsker.", " That is more electives than the bachelor has room for, so you must choose between your wishes."],
     budgetLite: ["Det er {e} ECTS i alt.", "That is {e} ECTS in total."],
-    addAll: ["Læg alle {n} kurser i min plan ({e} ECTS)", "Add all {n} courses to my plan ({e} ECTS)"],
+    addAll: ["Læg alle {n} kurser i min plan ({e} ECTS)", "Add all {n} courses to my plan ({e} ECTS)"], addAll1: ["Læg kurset i min plan ({e} ECTS)", "Add the course to my plan ({e} ECTS)"],
     covered: ["Din plan dækker kurskravene til alle dine ønsker.", "Your plan covers the course requirements for all your wishes."],
     cant: ["Kan ikke løses med DTU-kurser alene", "Cannot be solved with DTU courses alone"],
     onlyE: ["Kun efterår", "Autumn only"], onlyF: ["Kun forår", "Spring only"], autumnL: ["efterår", "autumn"], springL: ["forår", "spring"],
@@ -2290,30 +2746,31 @@ if (typeof module !== "undefined") module.exports = KPE;
     spH: ["Semesterplan", "Semester plan"],
     spLead: ["Hvert kursus ligger i et semester. Flyt det med vælgeren. To kurser på samme tidspunkt giver en advarsel.", "Every course sits in a semester. Move it with the selector. Two courses at the same time give a warning."],
     spNote: ["Nye kurser lægges automatisk, hvor de ikke falder sammen med andre. Tidspunkterne er fra kursusbasen 2026/2027 og kan ændre sig.", "New courses are placed automatically where they do not clash with others. The times are from the course base 2026/2027 and may change."],
-    clashH: ["Sammenfald:", "Clash:"],
+    clashH: ["Overlap i skemaet:", "Timetable overlap:"],
     clashMod: ["{c} ligger på samme tidspunkt, {t}.", "{c} are at the same time, {t}."],
     clashPer: ["{c} ligger i samme 3-ugers periode, {t}.", "{c} are in the same three-week period, {t}."],
     clashFix: ["Fjern et af kurserne, og læg det i et andet semester.", "Remove one of the courses and add it to another semester."],
     inAutumn: ["i efteråret", "in the autumn"], inSpring: ["i foråret", "in the spring"],
-    rowClash: ["Sammenfald i {n}. semester med {c}: {t}", "Clash in semester {n} with {c}: {t}"],
-    banner: ["{n} sammenfald i din semesterplan.", "{n} clashes in your semester plan."], banner1: ["1 sammenfald i din semesterplan.", "1 clash in your semester plan."],
+    rowClash: ["Overlapper i {n}. semester med {c}: {t}", "Overlaps in semester {n} with {c}: {t}"],
+    banner: ["{n} kurser overlapper i skemaet.", "{n} timetable overlaps in your plan."], banner1: ["1 kursus overlapper i skemaet.", "1 timetable overlap in your plan."],
     bannerLink: ["Se det i semesterplanen", "See it in the semester plan"],
-    noClash: ["Ingen sammenfald i din plan.", "No clashes in your plan."],
+    noClash: ["Ingen overlap i dit skema.", "No timetable overlaps in your plan."],
     empty: ["Ingen kurser endnu", "No courses yet"], over30: ["mere end 30", "more than 30"],
     part: ["del {k} af 2", "part {k} of 2"], contd: ["fortsat fra {n}. semester", "continued from semester {n}"],
-    replan: ["Fordel kurserne automatisk igen", "Distribute the courses automatically again"],
+    replan: ["Fordel kurserne automatisk igen", "Distribute the courses automatically again"], replan2: ["Tryk igen: dine egne flytninger nulstilles", "Press again: your own moves will be reset"],
     autumn: ["Efterår", "Autumn"], spring: ["Forår", "Spring"],
     saveH: ["Gem eller flyt din plan", "Save or move your plan"],
     saveLead: ["Planen gemmes i denne browser. Vil du have den med til en anden enhed eller sende den til en medstuderende, så kopiér koden og indlæs den dér.", "The plan is saved in this browser. To take it to another device or send it to a fellow student, copy the code and load it there."],
     codePh: ["Kode til din plan", "Code for your plan"], copy: ["Kopiér min plan som kode", "Copy my plan as a code"], loadc: ["Indlæs kode", "Load code"], reset: ["Nulstil planen", "Reset the plan"], reset2: ["Tryk igen for at nulstille", "Press again to reset"],
     mCopy1: ["Koden står i feltet. Markér og kopiér den, hvis den ikke blev kopieret automatisk.", "The code is in the box. Select and copy it if it was not copied automatically."], mCopy2: ["Koden er kopieret.", "The code is copied."],
     mLoad: ["Planen er indlæst.", "The plan is loaded."], mBad: ["Koden kunne ikke læses. Kopiér hele koden, og prøv igen.", "The code could not be read. Copy the whole code and try again."], mReset: ["Planen er nulstillet.", "The plan is reset."],
-    foot: ["Kurser og tidspunkter er fra DTU's kursusbase 2026/2027 og kan ændre sig fra år til år. Kun retskrav og direkte adgang giver en garanteret plads; ellers afgør DTU optaget, og opfyldte krav er ingen garanti. Kursuslisten er DTU's bachelorkurser og de kandidatkurser, der er forhåndsgodkendt for din retning, uden andre retningers fagprojekter og uden dubletter på andre sprog eller online. De obligatoriske kurser er lagt ind for 21 DTU-bachelorer (optag 2023 eller senere) ud fra studieplanerne på student.dtu.dk; valgfrie puljer og ECTS-regnskab er kun lagt ind for Miljøteknologi.", "Courses and times are from DTU's course base 2026/2027 and may change from year to year. Only a legal right and direct admission give a guaranteed place; otherwise DTU decides, and meeting the requirements is no guarantee. The course list is DTU's bachelor courses and the master's courses pre-approved for your programme, without other programmes' project courses and without duplicates in other languages or online. The mandatory courses are included for 21 DTU bachelors (admitted 2023 or later) from the study plans on student.dtu.dk; elective pools and ECTS accounting are only included for Environmental Engineering."],
+    foot: ["Kurser og tidspunkter er fra DTU's kursusbase 2026/2027 og kan ændre sig fra år til år. Kun retskrav og direkte adgang giver en garanteret plads; ellers afgør DTU optaget, og opfyldte krav er ingen garanti. Kursuslisten er DTU's bachelorkurser og de kandidatkurser, der er forhåndsgodkendt for din retning, uden andre retningers fagprojekter og uden dubletter på andre sprog eller online. Studieplanerne for 21 DTU-bachelorer (optag 2023 eller senere) er lagt ind ud fra student.dtu.dk, med fagblokke, valgregler og ECTS-regnskab.", "Courses and times are from DTU's course base 2026/2027 and may change from year to year. Only a legal right and direct admission give a guaranteed place; otherwise DTU decides, and meeting the requirements is no guarantee. The course list is DTU's bachelor courses and the master's courses pre-approved for your programme, without other programmes' project courses and without duplicates in other languages or online. The study plans for 21 DTU bachelors (admitted 2023 or later) are included from student.dtu.dk, with course blocks, choice rules and ECTS accounting."],
   };
+  var NEED = { grund: 55, retn: 55, proj: 25, valg: 45 };
   function T(k, v) {
     var s = S[k] ? S[k][pref.lang === "en" ? 1 : 0] : k;
     if (v) for (var x in v) s = s.split("{" + x + "}").join(v[x]);
-    return s;
+    return s.split("{V}").join(NEED.valg).split("{R}").join(NEED.retn);
   }
   function L(x) { return x && typeof x === "object" && ("da" in x) ? x[pref.lang] : (x || ""); }
   function $(id) { return document.getElementById(id); }
@@ -2323,10 +2780,12 @@ if (typeof module !== "undefined") module.exports = KPE;
   function bach(id) { for (var i = 0; i < KP.bachelors.length; i++) if (KP.bachelors[i].id === id) return KP.bachelors[i]; return null; }
   function nr(id) { var c = E.course(id); return c ? c.nr : id; }
   // Kursets rolle i den valgte bachelor: Miljøteknologi har hele studieplanen, de øvrige har obligatoriske (obl) og anbefalede puljekurser (retn).
+  function hasStudy(B0) { return !!B0 && (B0.full || !!(KP.study && KP.study[B0.id])); }
+  function studyPool(id) { var S = KP.study && KP.study[pref.b]; if (!S) return false; return (S.pools || []).some(function (p) { return (" " + p[1] + " ").indexOf(" " + id + " ") >= 0; }); }
   function role(c) {
     if (pref.b === "miljo") return c.role;
     var p = KP.plans && KP.plans[pref.b];
-    return !p ? "valgfri" : (p.obl[c.id] !== undefined ? "obl" : (p.retn[c.id] !== undefined ? "retn" : (p.pool[c.id] !== undefined ? "pulje" : "valgfri")));
+    return !p ? "valgfri" : (p.obl[c.id] !== undefined ? "obl" : (p.retn[c.id] !== undefined ? "retn" : (p.pool[c.id] !== undefined || studyPool(c.id) ? "pulje" : "valgfri")));
   }
   function blank(b) { return { c: (b && KP.defaults[b] ? KP.defaults[b] : []).slice(), other: 0, flags: {}, supp: {}, wish: [], sem: {}, extra: 0, pv: 1, ext: [], ms: { id: null, c: [], sem: {} } }; }
   // Hvert valgt kursus får et semester: brugerens valg, ellers DTU's anbefalede, ellers det med færrest sammenfald.
@@ -2521,20 +2980,21 @@ if (typeof module !== "undefined") module.exports = KPE;
   }
 
   function renderCourses(S0, B0) {
-    var html = stepHead("kurser", "hCourses", B0.full ? T("lCoursesFull") : (KP.plans[B0.id] ? T(KP.plans[B0.id].auto ? "lCoursesAuto" : "lCoursesPlan", { b: L(B0) }) : T("lCoursesLite", { b: L(B0) })));
-    if (B0.full && S0.warn.length) html += '<div class="acc">' + acc("todo", T("todo"), "", String(S0.warn.length), function () {
-      return '<ul class="notes">' + S0.warn.map(function (w) { return "<li>" + esc(T(w[0], { 0: w[1] })) + "</li>"; }).join("") + "</ul>";
+    var html = stepHead("kurser", "hCourses", hasStudy(B0) ? T("lCoursesFull") : (KP.plans[B0.id] ? T(KP.plans[B0.id].auto ? "lCoursesAuto" : "lCoursesPlan", { b: L(B0) }) : T("lCoursesLite", { b: L(B0) })));
+    if (hasStudy(B0) && S0.warn.length) html += '<div class="acc">' + acc("todo", T("todo"), "", String(S0.warn.length), function () {
+      var note = KP.study && KP.study[B0.id] && KP.study[B0.id].note;
+      return '<ul class="notes">' + S0.warn.map(function (w) { return "<li>" + esc(T(w[0], { 0: typeof w[1] === "object" ? L(w[1]) : w[1], 1: w[2], 2: w[3] })) + "</li>"; }).join("") + "</ul>" + (note ? '<p class="small">' + esc(L(note)) + "</p>" : "");
     }, "warnacc") + "</div>";
     html += (SP.clashes ? '<p class="clash" id="semstatus" role="status"><strong>' + T(SP.clashes === 1 ? "banner1" : "banner", { n: SP.clashes }) + "</strong></p>" : '<p class="okline" id="semstatus" role="status">' + T("noClash") + "</p>") +
       '<div class="sems">' + SP.sems.map(semCard).join("") + "</div>" +
       '<div class="btns">' + (st.extra < 4 ? '<button type="button" class="btn btn-ghost" id="addsemester" data-extra="1">+ ' + T("addSemX") + "</button>" : "") +
       (st.extra > 0 && !SP.sems[SP.sems.length - 1].items.length && !extIn(6 + st.extra).length ? '<button type="button" class="btn btn-ghost" id="rmsemester" data-extra="-1">' + T("rmSemX", { n: 6 + st.extra }) + "</button>" : "") + "</div>" +
       '<div class="btns"><button type="button" class="btn btn-ghost" id="gridtoggle" data-grid="1" aria-expanded="' + ui.showGrid + '">' + T(ui.showGrid ? "hideGrid" : "showGrid") + "</button>" +
-      '<button type="button" class="btn btn-ghost" id="replan" data-replan="1">' + T("replan") + "</button></div>" +
+      '<button type="button" class="btn btn-ghost" id="replan" data-replan="1">' + T(ui.rpArm ? "replan2" : "replan") + "</button></div>" +
       '<p class="small">' + T("spNote") + " " + T("pointNote") + "</p>";
-    if (B0.full) html += '<div class="acc">' + acc("other", T("other"), "", st.other ? st.other + " ECTS" : "", function () {
+    if (hasStudy(B0)) html += '<div class="acc">' + acc("other", T("other"), "", st.other ? st.other + " ECTS" : "", function () {
       return '<p class="grule">' + T("otherLead") + '</p><p class="grule">' + T("otherKU") + "</p>" +
-        '<label class="num" for="other">ECTS <input type="number" id="other" min="0" max="45" step="2.5" value="' + st.other + '"></label>';
+        '<label class="num" for="other">ECTS <input type="number" id="other" min="0" max="' + NEED.valg + '" step="2.5" value="' + st.other + '"></label>';
     }) + "</div>";
     $("p-kurser").innerHTML = html + stepNav("kurser");
   }
@@ -2920,12 +3380,12 @@ if (typeof module !== "undefined") module.exports = KPE;
     else {
       html += '<ul class="wl">' + P.ws.map(function (m) { var r = E.evalMaster(m, pref.b, H, st); return "<li><span>" + esc(L(m.name)) + '</span> <span class="unitag">' + m.uni + "</span>" + chip(m, r) + "</li>"; }).join("") + "</ul>";
       if (P.items.length) {
-        var S2 = E.summarize(KP, P.sim, st.other + extSum()), e = 0;
+        var S2 = E.summarize(KP, P.sim, st.other + extSum(), pref.b), e = 0;
         P.items.forEach(function (x) { e += E.ects(x.id); });
         html += "<h4>" + T("need") + '</h4><div class="rows">' +
           P.items.map(function (x) { return row(E.course(x.id), "p-" + x.id) + '<span class="opens">' + esc(T("reqBy", { m: x.m })) + "</span>"; }).join("") + "</div>" +
-          '<p class="budget">' + (B0.full ? T("budget", { a: "<strong>" + S2.valg + "</strong>", b: "<strong>" + S2.retn + "</strong>" }) + (S2.valg > 45 ? T("budgetOver") : "") : T("budgetLite", { e: e })) + "</p>" +
-          '<button type="button" class="btn" id="addwish" data-addwish="1">' + T("addAll", { n: P.items.length, e: e }) + "</button>";
+          '<p class="budget">' + (hasStudy(B0) ? T("budget", { a: "<strong>" + S2.valg + "</strong>", b: "<strong>" + S2.retn + "</strong>" }) + (S2.valg > S2.need.valg ? T("budgetOver") : "") : T("budgetLite", { e: e })) + "</p>" +
+          '<button type="button" class="btn" id="addwish" data-addwish="1">' + T(P.items.length === 1 ? "addAll1" : "addAll", { n: P.items.length, e: e }) + "</button>";
       } else if (!P.open.length) html += '<p class="budget">' + T("covered") + "</p>";
       if (P.open.length) html += "<h4>" + T("cant") + '</h4><ul class="notes">' + P.open.map(function (o) { return "<li><strong>" + esc(o.m.short) + ":</strong> " + esc(o.labs.join("; ")) + "</li>"; }).join("") + "</ul>";
     }
@@ -2942,8 +3402,8 @@ if (typeof module !== "undefined") module.exports = KPE;
 
   function renderMeters(S0, B0) {
     var el = $("meters");
-    if (!B0.full) { el.innerHTML = '<div class="mrow"><span class="tv">' + (S0.all + extSum()) + '</span><span class="tl">' + T("picked") + "</span></div>"; return; }
-    var parts = [["mGrund", S0.grund, 55], ["mRetn", S0.retn, 55], ["mProj", S0.proj, 25], ["mValg", S0.valg, 45]];
+    if (!hasStudy(B0)) { el.innerHTML = '<div class="mrow"><span class="tv">' + (S0.all + extSum()) + '</span><span class="tl">' + T("picked") + "</span></div>"; return; }
+    var N = S0.need, parts = [["mGrund", S0.grund, N.grund], ["mRetn", S0.retn, N.retn], ["mProj", S0.proj, N.proj], ["mValg", S0.valg, N.valg]];
     el.innerHTML = '<div class="mrow"><span class="tv">' + S0.total + '</span><span class="tl">' + T("ofEcts") + "</span></div>" +
       '<div class="track"><div class="fill' + (S0.total >= 180 ? " full" : "") + '" style="width:' + Math.min(100, Math.round(100 * S0.total / 180)) + '%"></div></div>' +
       '<p class="msub">' + parts.map(function (x) { return "<span" + (x[1] >= x[2] ? ' class="full"' : "") + ">" + T(x[0]) + " " + x[1] + "/" + x[2] + "</span>"; }).join("") + "</p>";
@@ -2961,7 +3421,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     }
     function btn(b) {
       return '<button type="button" class="bpick' + (B0 && B0.id === b.id ? " cur" : "") + '" id="b-' + b.id + '" data-bach="' + b.id + '" aria-pressed="' + !!(B0 && B0.id === b.id) + '"><span class="bn">' + esc(L(b)) + "</span>" +
-        (b.full ? '<span class="tag tag-full">' + T("pickFull") + "</span>" : "") + "</button>";
+        "</button>";
     }
     var U = uniOf(u), mine = KP.bachelors.filter(function (b) { return b.uni === u; });
     var cur = mine.filter(function (b) { return !b.old; }), old = mine.filter(function (b) { return b.old; });
@@ -2983,7 +3443,8 @@ if (typeof module !== "undefined") module.exports = KPE;
     $("foot").innerHTML = "<p>" + esc(T("unofficial", { d: L(KP.checked) })) + "</p><p>" + esc(T("foot")) + "</p>";
     document.body.setAttribute("data-view", view === "bachelor" ? "start" : view);
     if (B0) {
-      var S0 = E.summarize(KP, has(), st.other + extSum());
+      var S0 = E.summarize(KP, has(), st.other + extSum(), pref.b);
+      NEED = S0.need || NEED;
       E.setSems(6 + (st.extra || 0));
       SP = E.semPlan(KP, pref.b, has(), st.sem); CL = {};
       SP.sems.forEach(function (S) { S.clashes.forEach(function (cl) { cl.ids.forEach(function (id) { (CL[id] = CL[id] || []).push({ n: S.n, season: S.season, cl: cl }); }); }); });
@@ -3083,7 +3544,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     else if (t.hasAttribute("data-wish")) { var w = t.getAttribute("data-wish"), i = st.wish.indexOf(w); if (i < 0) st.wish.push(w); else st.wish.splice(i, 1); commit(); }
     else if (t.hasAttribute("data-add")) { E.suggest(master(t.getAttribute("data-add")), pref.b, has(), st).forEach(function (x) { toggle(x, true); }); commit(); }
     else if (t.hasAttribute("data-addwish")) { wishPlan(has()).items.forEach(function (x) { toggle(x.id, true); }); commit(); }
-    else if (t.hasAttribute("data-replan")) { st.sem = {}; commit(); }
+    else if (t.hasAttribute("data-replan")) { if (ui.rpArm) { st.sem = {}; ui.rpArm = false; commit(); } else { ui.rpArm = true; render(); } }
     else if (t.id === "copy") {
       var c = code(); ui.msg = T("mCopy1"); render(); $("code").value = c; $("code").select();
       try { navigator.clipboard.writeText(c).then(function () { ui.msg = T("mCopy2"); $("msg").textContent = ui.msg; }, function () { }); } catch (e) { }
