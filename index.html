@@ -676,6 +676,10 @@ h1, h2, h3, h4, .top h1 { font-family: var(--display); font-weight: 800; letter-
 .fill { background: var(--accent); }
 .fill.full { background: var(--ok); }
 
+/* "Læs mere"-link ved hvert kursus: almindeligt tekstlink, så det ikke ligner et mærke */
+.more { display: inline-block; margin-left: 8px; padding: 4px 0; font: 700 13px var(--body); color: var(--accent); background: none; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.more:hover { text-decoration-thickness: 2px; }
+
 </style>
 </head>
 <body data-view="start">
@@ -1457,6 +1461,12 @@ KP.study = {};
     note: B("28244 og 47302 kræver normalt fremmøde på DTU Lyngby Campus. DTU anbefaler valgfagene i de anbefalede studieplaner, fordi de undervises online.", "28244 and 47302 normally require attendance at DTU Lyngby Campus. DTU recommends the electives in the recommended study plans because they are taught online.") });
 })();
 // </study>
+// <links>
+// "Læs mere": DTU-kurser -> kurser.dtu.dk/course/<nr>; bachelorprojekt -> uddannelsens studieplan på student.dtu.dk; KU-kurser -> kurser.ku.dk (se research/ku_links.md)
+KP.planUrl = {"am": "https://student.dtu.dk/studieordninger/bachelor/anvendt-matematik/studieplan","bio": "https://student.dtu.dk/studieordninger/bachelor/bioteknologi/studieplan","byg": "https://student.dtu.dk/studieordninger/bachelor/byggeteknologi/studieplan","bd": "https://student.dtu.dk/studieordninger/bachelor/bygningsdesign/studieplan","be": "https://student.dtu.dk/studieordninger/bachelor/baeredygtigt-energidesign/studieplan","ce": "https://student.dtu.dk/studieordninger/bachelor/computer-engineering/studieplan","cy": "https://student.dtu.dk/studieordninger/bachelor/cyberteknologi/studieplan","dsm": "https://student.dtu.dk/studieordninger/bachelor/data-science-og-management/studieplan","di": "https://student.dtu.dk/studieordninger/bachelor/design-og-innovation/studieplan","el": "https://student.dtu.dk/studieordninger/bachelor/elektroteknologi/studieplan","fys": "https://student.dtu.dk/studieordninger/bachelor/fysik-og-ingenioervidenskab/studieplan","geo": "https://student.dtu.dk/studieordninger/bachelor/geofysik-og-rumteknologi/studieplan","kt": "https://student.dtu.dk/studieordninger/bachelor/kemi-og-teknologi/studieplan","ai": "https://student.dtu.dk/studieordninger/bachelor/kunstig-intelligens-og-data/studieplan","lst": "https://student.dtu.dk/studieordninger/bachelor/life-science-og-teknologi/studieplan","med": "https://student.dtu.dk/studieordninger/bachelor/medicin-og-teknologi/studieplan","mek": "https://student.dtu.dk/studieordninger/bachelor/mekanisk-design-og-teknologi/studieplan","sw": "https://student.dtu.dk/studieordninger/bachelor/softwareteknologi/studieplan","tbm": "https://student.dtu.dk/studieordninger/bachelor/teknisk-biomedicin/studieplan","tek": "https://student.dtu.dk/studieordninger/bachelor/teknologi-digital/studieplan","miljo": "https://student.dtu.dk/studieordninger/bachelor/miljoeteknologi/studieplan"};
+KP.kuUrl = {};
+// </links>
+
 
 // Studieplaner for de øvrige DTU-bachelorer (optag 2023 eller senere): obligatoriske kurser med semestret fra DTU's første anbefalede studieforløb.
 // "id:semester"; uden semester lægges kurset efter årstid. retn = puljekurser, der står i alle retningens anbefalede forløb. auto = retningen har ikke et forløb med semestre.
@@ -2655,7 +2665,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     addSemX: ["Tilføj et ekstra semester", "Add an extra semester"], rmSemX: ["Fjern {n}. semester", "Remove semester {n}"], tagExtra: ["ekstra", "extra"],
     w_np: ["{0} er et kandidatkursus, der ikke står på din retnings liste over forhåndsgodkendte kurser. Det tæller ikke med i bacheloren uden dispensation.", "{0} is a master's course that is not on your programme's list of pre-approved courses. It does not count towards the bachelor without an exemption."],
     tagNp: ["ikke forhåndsgodkendt", "not pre-approved"], tagPre: ["forhåndsgodkendt", "pre-approved"],
-    addCourse: ["Tilføj kursus", "Add course"], closeAdd: ["Luk kursuslisten", "Close the course list"], remove: ["Fjern", "Remove"], rmA: ["Fjern {c}", "Remove {c}"], addA: ["Tilføj {c}", "Add {c}"],
+    addCourse: ["Tilføj kursus", "Add course"], more: ["Læs mere", "Read more"], moreA: ["Læs mere om {c} (åbner i en ny fane)", "Read more about {c} (opens in a new tab)"], closeAdd: ["Luk kursuslisten", "Close the course list"], remove: ["Fjern", "Remove"], rmA: ["Fjern {c}", "Remove {c}"], addA: ["Tilføj {c}", "Add {c}"],
     fLabel: ["Vis", "Show"], fAll: ["Alle kurser", "All courses"], fReq: ["Tæller i adgangskrav", "Counts in admission requirements"],
     pickShown: ["Viser {a} af {b} kurser, der udbydes i dette semester.", "Showing {a} of {b} courses offered in this semester."], pickMore: ["Vis flere", "Show more"],
     pickClash: ["Samme tidspunkt som {c}", "Same time as {c}"],
@@ -2810,6 +2820,19 @@ if (typeof module !== "undefined") module.exports = KPE;
   function master(id) { for (var i = 0; i < KP.masters.length; i++) if (KP.masters[i].id === id) return KP.masters[i]; return null; }
   function bach(id) { for (var i = 0; i < KP.bachelors.length; i++) if (KP.bachelors[i].id === id) return KP.bachelors[i]; return null; }
   function nr(id) { var c = E.course(id); return c ? c.nr : id; }
+  // "Læs mere": link til kursets egen side
+  function moreUrl(c) {
+    if (/^[0-9]{5}$/.test(c.id)) return "https://kurser.dtu.dk/course/" + c.id;
+    if (c.id === "BACH") return (KP.planUrl && KP.planUrl[pref.b]) || "https://student.dtu.dk/studieordninger/bachelor";
+    if (c.id === "SPEC") { var mp = KP.mplans && st.ms && KP.mplans[st.ms.id]; return (mp && mp.url) || "https://www.dtu.dk/uddannelse/kandidat"; }
+    if (KP.kuUrl && KP.kuUrl[c.id]) return KP.kuUrl[c.id];
+    if (/^KU/.test(c.id)) return (KP.planUrl && KP.planUrl.med) || "https://kurser.ku.dk/";
+    return "";
+  }
+  function more(c) {
+    var u = moreUrl(c); if (!u) return "";
+    return ' <a class="more" href="' + esc(u) + '" target="_blank" rel="noopener" aria-label="' + esc(T("moreA", { c: (c.nr && c.nr !== "–" ? c.nr + " " : "") + L(c.name) })) + '">' + T("more") + '<span aria-hidden="true">&nbsp;↗</span></a>';
+  }
   // Kursets rolle i den valgte bachelor: Miljøteknologi har hele studieplanen, de øvrige har obligatoriske (obl) og anbefalede puljekurser (retn).
   function hasStudy(B0) { return !!B0 && (B0.full || !!(KP.study && KP.study[B0.id])); }
   function studyPool(id) { var S = KP.study && KP.study[pref.b]; if (!S) return false; return (S.pools || []).some(function (p) { return p[1].split(/[\s|]+/).indexOf(id) >= 0; }); }
@@ -2905,7 +2928,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     return '<label class="crs' + (on ? " on" : "") + (warn ? " bad" : "") + '" for="' + idAttr + '">' +
       '<input type="checkbox" id="' + idAttr + '" data-course="' + c.id + '"' + (on ? " checked" : "") + ">" +
       '<span class="nr">' + esc(c.nr) + "</span>" +
-      '<span class="nm">' + esc(L(c.name)) + tags + "</span>" +
+      '<span class="nm">' + esc(L(c.name)) + tags + more(c) + "</span>" +
       '<span class="ec">' + c.ects + "</span>" +
       '<span class="sk">' + schedHtml(c) + (on ? semTag(c) : "") + (showReq && OPENS[c.id] ? '<span class="req">' + esc(T("inReq", { m: OPENS[c.id].join(", ") })) + "</span>" : "") + "</span></label>" + warn;
   }
@@ -3001,7 +3024,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     if (c.np && !(c.pre && c.pre.indexOf(pref.b) >= 0)) tags += '<span class="tag tag-maybe">' + T("tagNp") + "</span>";
     else if (c.level === "MSc" && c.pre) tags += '<span class="tag">' + T("tagPre") + "</span>";
     return '<div class="pick' + (cl.length ? " bad" : "") + '"><button type="button" class="addb" id="ad-' + c.id + '" data-addc="' + c.id + '" aria-label="' + esc(T("addA", { c: c.nr + " " + L(c.name) })) + '">+</button>' +
-      '<span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) + tags + '</span><span class="ec">' + c.ects + "</span>" +
+      '<span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) + tags + more(c) + '</span><span class="ec">' + c.ects + "</span>" +
       '<span class="sk">' + esc(it ? itemWhen(it) : "") + (OPENS[c.id] ? '<span class="req">' + esc(T("inReq", { m: OPENS[c.id].join(", ") })) + "</span>" : "") +
       (cl.length ? '<span class="pclash">' + esc(T("pickClash", { c: cl.join("; ") })) + "</span>" : "") + "</span></div>";
   }
@@ -3242,7 +3265,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     var ctl = it.part === 2 ? '<span class="contd">' + T("contd", { n: it.start }) + "</span>" :
       '<span class="ctl">' + moveSel(c, it.start) + '<button type="button" class="rmb" id="rm-' + c.id + '" data-rm="' + c.id + '" aria-label="' + esc(T("rmA", { c: c.nr + " " + L(c.name) })) + '">' + T("remove") + "</button></span>";
     return '<div class="si' + (bad ? " bad" : "") + '"><span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) +
-      (it.part ? ' <span class="tag">' + T("part", { k: it.part }) + "</span>" : "") + roleTag(c) + '</span><span class="ec">' + it.ects + "</span>" +
+      (it.part ? ' <span class="tag">' + T("part", { k: it.part }) + "</span>" : "") + roleTag(c) + more(c) + '</span><span class="ec">' + it.ects + "</span>" +
       '<span class="sk"><span class="tm">' + esc(itemWhen(it)) + "</span>" + ctl + "</span></div>";
   }
   function semCard(S) {
@@ -3311,7 +3334,7 @@ if (typeof module !== "undefined") module.exports = KPE;
   function mItem(c, ects, when, part, start, bad, A) {
     var ctl = part === 2 ? '<span class="contd">' + T("contd", { n: start }) + "</span>" :
       '<span class="ctl">' + mMove(c, start) + '<button type="button" class="rmb" id="mr-' + c.id + '" data-mrm="' + c.id + '" aria-label="' + esc(T("rmA", { c: c.nr + " " + L(c.name) })) + '">' + T("remove") + "</button></span>";
-    return '<div class="si' + (bad ? " bad" : "") + '"><span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) + (part ? ' <span class="tag">' + T("part", { k: part }) + "</span>" : "") + mTag(c.id, A) +
+    return '<div class="si' + (bad ? " bad" : "") + '"><span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) + (part ? ' <span class="tag">' + T("part", { k: part }) + "</span>" : "") + mTag(c.id, A) + more(c) +
       '</span><span class="ec">' + ects + '</span><span class="sk"><span class="tm">' + esc(when) + "</span>" + ctl + "</span></div>";
   }
   function mSeason(c) { var o = E.only(c, "__ms"); return o ? T(o === "E" ? "autumn" : "spring") : T("autumn") + " / " + T("spring"); }
@@ -3325,7 +3348,7 @@ if (typeof module !== "undefined") module.exports = KPE;
       P.sems.forEach(function (S2) { S2.clashes.forEach(function (x) { if (x.ids.indexOf(c.id) >= 0) cl.push(names(x.ids.filter(function (id) { return id !== c.id; })) + " (" + slotText(x, S2.season) + ")"); }); });
     }
     return '<div class="pick' + (cl.length ? " bad" : "") + '"><button type="button" class="addb" id="ma-' + c.id + '" data-madd="' + c.id + '" aria-label="' + esc(T("addA", { c: c.nr + " " + L(c.name) })) + '">+</button>' +
-      '<span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) + '</span><span class="ec">' + c.ects + '</span><span class="sk">' + esc(when) +
+      '<span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) + more(c) + '</span><span class="ec">' + c.ects + '</span><span class="sk">' + esc(when) +
       (cl.length ? '<span class="pclash">' + esc(T("pickClash", { c: cl.join("; ") })) + "</span>" : "") + "</span></div>";
   }
   function mPicker(n) {
