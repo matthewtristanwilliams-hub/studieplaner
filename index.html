@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kandidatplanlægger DTU</title>
+<title>Studieplanlægger DTU</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400..900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -679,6 +679,15 @@ h1, h2, h3, h4, .top h1 { font-family: var(--display); font-weight: 800; letter-
 /* "Læs mere"-link ved hvert kursus: almindeligt tekstlink, så det ikke ligner et mærke */
 .more { display: inline-block; margin-left: 8px; padding: 4px 0; font: 700 13px var(--body); color: var(--accent); background: none; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
 .more:hover { text-decoration-thickness: 2px; }
+
+/* Konfetti ved Miljøteknologi */
+#yay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.35); cursor: pointer; transition: opacity 0.3s; }
+#yay.out { opacity: 0; }
+#yay canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.yaymsg { position: relative; max-width: 340px; margin: 16px; padding: 26px 24px 20px; border-radius: 22px; background: var(--surface); color: var(--ink); text-align: center; box-shadow: var(--raise-hi); }
+.yaymsg p { font: 800 22px/1.25 var(--display); margin-bottom: 16px; }
+.yaymsg p::before { content: "🎉"; display: block; font-size: 40px; margin-bottom: 8px; }
+@media (prefers-reduced-motion: reduce) { #yay { transition: none; } }
 
 </style>
 </head>
@@ -2622,7 +2631,7 @@ if (typeof module !== "undefined") module.exports = KPE;
   var DAYS = [["man", "Mon", "1A", "2A"], ["tirs", "Tue", "3A", "4A"], ["ons", "Wed", "5A", "5B"], ["tors", "Thu", "2B", "1B"], ["fre", "Fri", "4B", "3B"]];
 
   var S = {
-    title: ["Kandidatplanlægger", "Master's planner"],
+    title: ["Studieplanlægger", "Study planner"], yay: ["Tillykke, du har valgt den bedste bachelor!", "Congratulations, you've picked the best bachelor!"], yayClose: ["Luk", "Close"],
     st1: ["Bachelor", "Bachelor"], st2: ["Kurser", "Courses"], st3: ["Kandidater", "Master's"], st4: ["Ønsker", "Wishes"], st5: ["Kandidatplan", "Master's plan"],
     hMs: ["Planlæg din kandidat", "Plan your master's"],
     lMs: ["Vælg en kandidat, og læg dens kurser i fire semestre. Siden holder regnskab med de fire blokke: polyteknisk grundlag, retningsspecifikke kurser, valgfrie kurser og speciale.", "Pick a master's programme and place its courses in four semesters. The page keeps count of the four blocks: polytechnical foundation, programme-specific courses, electives and thesis."],
@@ -2689,7 +2698,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     fDeg: ["Hører til uddannelsen", "Part of the degree"], fFree: ["Valgfrie kurser", "Free electives"], move: ["Flyt", "Move"], moveA: ["Flyt {c} til et andet semester", "Move {c} to another semester"], moveTo: ["til {n}. semester ({s})", "to semester {n} ({s})"], tagG2: ["vælg mindst 5 ECTS", "pick at least 5 ECTS"], tagG3: ["retningsspecifikt valg", "programme-specific choice"],
     wishNote: ["Kurserne lægges automatisk i et semester. Du kan flytte dem i trin 2.", "The courses are placed in a semester automatically. You can change that in step 2."],
     toSem: ["Se semesterplanen", "See the semester plan"],
-    lead: ["For bachelorstuderende på DTU. Vælg din bachelor, læg din semesterplan, og se hvilke kandidater du kan søge, og hvilke valgfag de kræver.", "For bachelor students at DTU. Pick your bachelor, build your semester plan, and see which master's programmes you can apply for and which electives they require."],
+    lead: ["En studieplanlægger for bachelorstuderende på DTU: vælg din bachelor, læg din semesterplan, og se hvilke kandidater du kan søge, og hvilke valgfag de kræver. Skrevet ud af et dybt had til studieplan.dtu.dk.", "A study planner for bachelor students at DTU: pick your bachelor, build your semester plan, and see which master's programmes you can apply for and which electives they require. Written out of a deep hatred of studieplan.dtu.dk."],
     unofficial: ["Uofficielt værktøj lavet af en medstuderende, ikke af DTU. Kravene er hentet fra DTU den {d} og kan ændre sig. Tjek altid den officielle side, som der er link til ved hver kandidat, før du vælger fag eller søger.", "Unofficial tool made by a fellow student, not by DTU. The requirements were collected from DTU on {d} and may change. Always check the official page linked at each programme before you choose courses or apply."],
     pickTitle: ["Hvad læser du?", "What do you study?"],
     pickLead: ["Vælg din bachelor på DTU.", "Choose your DTU bachelor."],
@@ -2819,6 +2828,28 @@ if (typeof module !== "undefined") module.exports = KPE;
   function has() { return new Set(st.c); }
   function master(id) { for (var i = 0; i < KP.masters.length; i++) if (KP.masters[i].id === id) return KP.masters[i]; return null; }
   function bach(id) { for (var i = 0; i < KP.bachelors.length; i++) if (KP.bachelors[i].id === id) return KP.bachelors[i]; return null; }
+  // Konfetti, når man vælger Miljøteknologi
+  function celebrate() {
+    var old = document.getElementById("yay"); if (old) old.remove();
+    var box = document.createElement("div"); box.id = "yay"; box.setAttribute("role", "status");
+    box.innerHTML = '<canvas aria-hidden="true"></canvas><div class="yaymsg"><p>' + esc(T("yay")) + '</p><button type="button" class="btn" id="yayclose">' + T("yayClose") + "</button></div>";
+    document.body.appendChild(box);
+    var done = false, timer;
+    function close() { if (done) return; done = true; clearTimeout(timer); box.classList.add("out"); setTimeout(function () { box.remove(); }, 300); }
+    box.addEventListener("click", close);
+    timer = setTimeout(close, 4500);
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var cv = box.querySelector("canvas"), cx = cv.getContext && cv.getContext("2d");
+    if (reduce || !cx) return;
+    var W = cv.width = window.innerWidth, H = cv.height = window.innerHeight, cols = ["#990000", "#e0202f", "#f28c28", "#2e7d32", "#141414", "#ffffff", "#ffd23f"], P = [], i;
+    for (i = 0; i < 160; i++) P.push({ x: W / 2 + (Math.random() - 0.5) * W * 0.3, y: H * 0.35, vx: (Math.random() - 0.5) * 14, vy: -Math.random() * 14 - 4, r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.3, w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, c: cols[i % cols.length] });
+    (function frame() {
+      if (done || !box.isConnected) return;
+      cx.clearRect(0, 0, W, H);
+      P.forEach(function (p) { p.vy += 0.32; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr; cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore(); });
+      requestAnimationFrame(frame);
+    })();
+  }
   function nr(id) { var c = E.course(id); return c ? c.nr : id; }
   // "Læs mere": link til kursets egen side
   function moreUrl(c) {
@@ -3546,7 +3577,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     if (!t) return;
     if (t.id !== "reset") ui.resetArmed = false;
     if (t.hasAttribute("data-lang")) { pref.lang = t.getAttribute("data-lang"); ui.msg = ""; commit(); }
-    else if (t.hasAttribute("data-bach")) { if (t.getAttribute("data-bach") !== pref.b) setBach(t.getAttribute("data-bach")); pref.u = bach(pref.b).uni; ui.pickUni = false; save(); go(steps()[1][0]); }
+    else if (t.hasAttribute("data-bach")) { if (t.getAttribute("data-bach") !== pref.b) setBach(t.getAttribute("data-bach")); pref.u = bach(pref.b).uni; ui.pickUni = false; save(); go(steps()[1][0]); if (pref.b === "miljo") celebrate(); }
     else if (t.hasAttribute("data-uni")) { pref.u = t.getAttribute("data-uni"); ui.pickUni = false; save(); render(); window.scrollTo(0, 0); }
     else if (t.hasAttribute("data-chuni")) { ui.pickUni = true; render(); }
     else if (t.hasAttribute("data-muni")) { ui.mUni = t.getAttribute("data-muni"); render(); }
