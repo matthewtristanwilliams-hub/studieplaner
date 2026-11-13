@@ -774,8 +774,8 @@ function C(id, da, en, ects, role, level, subj, off, extra) {
 }
 // role gælder Miljøteknologi: grundlag | obl | g2 | g3 | projekt | valgfri.   level: BSc | MSc | BEng
 KP.courses = [
-  C("01001", "Matematik 1a", "Mathematics 1a", 10, "grundlag", "BSc", "basis", [{ txt: B("Skemaet afhænger af din retning", "The schedule depends on your programme"), s: "E" }], { offFor: { miljo: [{ m: ["E1A", "E2A", "E2B"] }], am: [{ m: ["E3A", "E4A", "E4B"] }] } }),
-  C("01002", "Matematik 1b", "Mathematics 1b", 10, "grundlag", "BSc", "basis", [{ txt: B("Skemaet afhænger af din retning", "The schedule depends on your programme"), s: "F" }], { offFor: { miljo: [{ m: ["F1A", "F2A", "F2B"] }], am: [{ m: ["F3A", "F4A", "F4B"] }] } }),
+  C("01001", "Matematik 1a", "Mathematics 1a", 10, "grundlag", "BSc", "basis", [{ txt: B("Skemaet afhænger af din retning", "The schedule depends on your programme"), s: "E" }], { offFor: { miljo: [{ m: ["E1A", "E2A", "E2B"] }], am: [{ m: ["E3A", "E4A", "E4B"] }], fys: [{ m: ["E3A", "E4A", "E4B"] }] } }),
+  C("01002", "Matematik 1b", "Mathematics 1b", 10, "grundlag", "BSc", "basis", [{ txt: B("Skemaet afhænger af din retning", "The schedule depends on your programme"), s: "F" }], { offFor: { miljo: [{ m: ["F1A", "F2A", "F2B"] }], am: [{ m: ["F3A", "F4A", "F4B"] }], fys: [{ m: ["F3A", "F4A", "F4B"] }] } }),
   C("02002", "Programmering", "Computer Programming", 5, "grundlag", "BSc", "basis", [{ m: ["E1B"] }, { m: ["E4B"], n: "02003" }]),
   C("02402", "Statistik", "Statistics", 5, "grundlag", "BSc", "basis", [{ m: ["E3A"] }, { m: ["F4A"] }]),
   C("10060", "Fysik", "Physics", 10, "grundlag", "BSc", "basis", [{ txt: B("Forår og efteråret efter, skema afhænger af din retning", "Spring and the following autumn, schedule depends on your programme"), s: "F", span: true }], { offFor: { miljo: [{ m: ["F1B", "E1B"], q: true }], am: [{ m: ["F5B", "E5B"] }] } }),
@@ -1144,8 +1144,8 @@ KP.courses = KP.courses.concat([
   C("27021", "Bioengineering (online)", "Bioengineering (online)", 5, "valgfri", "BSc", "basis", [{ m: ["F2A"] }], { cat: 1, pf: 1 }),
   C("28021", "Kemisk og biokemisk procesteknik (online)", "Chemical and Biochemical Process Engineering (online)", 10, "valgfri", "BSc", "proces", [{ m: ["E1A", "F1A"] }], { cat: 1, pf: 1 }),
   C("28145", "Introduktion til reaktionsteknik", "Introduction to Reaction Engineering", 5, "valgfri", "BSc", "proces", [{ m: ["E2B"] }], { cat: 1, pf: 1 }),
-  C("30110", "Fagprojekt – Geofysik og Rumteknologi", "Project work – Earth and Space Physics and Engineering", 10, "valgfri", "BSc", "fys", [{ txt: NOTIME, s: "F" }], { cat: 1, pf: 1 }),
-  C("34029", "Fagprojekt – Fysik og Ingeniørvidenskab", "Project work – Engineering Physics", 10, "valgfri", "BSc", "fys", [{ txt: NOTIME, s: "E" }, { txt: NOTIME, s: "F", n: "34019" }], { cat: 1, pf: 1 }),
+  C("30110", "Fagprojekt – Geofysik og Rumteknologi", "Project work – Earth and Space Physics and Engineering", 10, "valgfri", "BSc", "fys", [{ txt: B("forår og juni", "spring and June"), s: "F" }], { cat: 1, pf: 1 }),
+  C("34029", "Fagprojekt – Fysik og Ingeniørvidenskab", "Project work – Engineering Physics", 10, "valgfri", "BSc", "fys", [{ txt: B("efterår og januar", "autumn and January"), s: "E" }, { txt: B("forår og juni", "spring and June"), s: "F", n: "34019" }], { cat: 1, pf: 1 }),
   C("34229", "Fagprojekt – Cyberteknologi", "Project work – Cyber Technology", 10, "valgfri", "BSc", "el", [{ m: ["F5B"], p: ["jun"] }], { cat: 1, pf: 1 }),
   C("34720", "Fagprojekt – Elektroteknologi", "Project work – Electrical Engineering", 10, "valgfri", "BSc", "el", [{ m: ["F2A"], p: ["jun"] }], { cat: 1, pf: 1 }),
   C("41801", "Fagprojekt – Mekanisk design og Teknologi", "Project work – Mechanical Engineering", 10, "valgfri", "BSc", "mek", [{ m: ["F1A"], p: ["jun"] }], { cat: 1, pf: 1 }),
@@ -1229,7 +1229,7 @@ KP.courses = KP.courses.concat([
   C("02686", "Scientific computing for differentialligninger", "Scientific Computing for Differential Equations", 5, "valgfri", "MSc", "data", [{ m: ["F1B"] }], { cat: 1, pre: ["am"] }),
   C("02687", "Scientific Computing for ordinary and partial differential equations", "Scientific Computing for Ordinary and Partial Differential Equations", 5, "valgfri", "MSc", "data", [{ m: ["F1A"] }], { cat: 1, pre: ["am"] }),
   C("02805", "Sociale grafer og interaktioner", "Social Graphs and Interactions", 10, "valgfri", "MSc", "data", [{ m: ["E5A", "E5B"] }], { cat: 1, pre: ["sw"] }),
-  C("02807", "Beregningsmæssige værktøjer til datavidenskab", "Computational Tools for Data Science", 5, "valgfri", "MSc", "data", [{ txt: NOTIME, s: "E" }], { cat: 1, pre: ["sw"] }),
+  C("02807", "Beregningsmæssige værktøjer til datavidenskab", "Computational Tools for Data Science", 5, "valgfri", "MSc", "data", [{ txt: B("tirs 18-22", "Tue 18-22"), s: "E" }], { cat: 1, pre: ["sw"] }),
   C("02810", "UX Design Prototypeudvikling", "UX Design Prototyping", 5, "valgfri", "MSc", "data", [{ m: ["E1A"] }], { cat: 1, pre: ["ai", "sw"] }),
   C("10112", "Videregående kvantemekanik", "Advanced Quantum Mechanics", 10, "valgfri", "MSc", "fys", [{ m: ["E2A", "E2B"] }], { cat: 1, pre: ["fys"] }),
   C("10122", "Statistisk fysik", "Statistical Physics", 5, "valgfri", "MSc", "fys", [{ m: ["E3A"] }], { cat: 1, pre: ["geo"] }),
@@ -1278,7 +1278,7 @@ KP.courses = KP.courses.concat([
   C("34349", "FPGA-design til kommunikationssystemer", "FPGA Design for Communication Systems", 10, "valgfri", "MSc", "el", [{ m: ["F5A", "F5B"] }], { cat: 1, pre: ["cy"] }),
   C("34359", "SDN: softwaredefineret netværk", "SDN: Software-Defined Networking", 5, "valgfri", "MSc", "el", [{ m: ["E5B"] }], { cat: 1, pre: ["cy"] }),
   C("34365", "Prototyper for internet of things", "IoT Prototyping", 5, "valgfri", "MSc", "el", [{ m: ["E2B"] }], { cat: 1, pre: ["be"] }),
-  C("34366", "Intelligente systemer", "Intelligent Systems", 5, "valgfri", "MSc", "el", [{ txt: NOTIME, s: "E" }], { cat: 1, pre: ["geo"] }),
+  C("34366", "Intelligente systemer", "Intelligent Systems", 5, "valgfri", "MSc", "el", [{ txt: B("tirs 18-22", "Tue 18-22"), s: "E" }], { cat: 1, pre: ["geo"] }),
   C("34370", "Cloud-netværk", "Cloud Networking", 5, "valgfri", "MSc", "el", [{ m: ["F3A"] }], { cat: 1, pre: ["cy"] }),
   C("34374", "IoT Hardware og PCB Design", "IoT Hardware and PCB Design", 5, "valgfri", "MSc", "el", [{ m: ["F4B"] }], { cat: 1, pre: ["ce", "el"] }),
   C("34654", "Kredsløbsteknologi og EMC", "Circuit Technology and EMC", 5, "valgfri", "MSc", "el", [{ m: ["E4A"] }], { cat: 1, pre: ["el"] }),
@@ -1430,34 +1430,40 @@ KP.study = {};
     pools: [], proj: "02123 BACH", split: { "02100": ["grund", "retn"] },
     note: B("02100 (10 ECTS) tæller halvt i grundlaget og halvt som retningsspecifikt kursus.", "02100 (10 ECTS) counts half in the foundation and half as a programme-specific course.") });
   S("cy", { grund: G0, obl: "01035 02105 34210 34302 34313 34334",
-    pools: [[20, "02161 02451 34120 34121 34220 34325 34331 34333 34600 30015", B("Retningsspecifikke valgkurser (mindst 20 ECTS)", "Programme-specific electives (at least 20 ECTS)")]],
-    proj: "34229 BACH" });
-  S("dsm", { grund: "01001 01002 02002 02402|02403 10060|10054 26020 27020 42620", obl: "02105 02170 02451 42009 42101 42421 42580 42587 42588",
+    pools: [[20, "02161 02451 34120 34121 34220 34325 34331 34333 34600|30015", B("Retningsspecifikke valgkurser (mindst 20 ECTS; 34600 eller 30015 tæller kun én gang)", "Programme-specific electives (at least 20 ECTS; 34600 or 30015 counts only once)")]],
+    proj: "34229 BACH",
+    note: B("I stedet for 34120 kan du tage 30400 Elektromagnetisme (10 ECTS, 5 tæller som retningsspecifikt; kræver 34600). Matematik 2 kan med fordel tages i august (01037).", "Instead of 34120 you can take 30400 Electromagnetism (10 ECTS, 5 count as programme-specific; requires 34600). Mathematics 2 can be taken in August (01037).") });
+  S("dsm", { grund: "01001 01002 02002 02402|02403 10060|10054 26020 27020 42620", obl: "02105 02170 02451|02452 42009 42101 42421 42580 42587 42588",
     pools: [[10, "02405 12202 41619 42010 42586 42894 63852", B("To kurser fra listen (10 ECTS)", "Two courses from the list (10 ECTS)")]],
-    proj: "42584 BACH",
-    note: B("Tager du 10054 Modelfysik (5 ECTS) i stedet for 10060 Fysik, er grundlaget 50 ECTS og de valgfrie kurser 50 ECTS.", "If you take 10054 Model Physics (5 ECTS) instead of 10060 Physics, the foundation is 50 ECTS and the electives 50 ECTS.") });
+    proj: "42584 BACH", need: { grund: 50, valg: 50 },
+    note: B("På Data Science og Management er grundlaget 50 ECTS og de valgfrie kurser 50 ECTS. Tager du 10060 Fysik (10 ECTS) i stedet for 10054, tæller de ekstra 5 ECTS som valgfag. Kandidatkurset 02452 kan erstatte 02451.", "On Data Science and Management the foundation is 50 ECTS and electives 50 ECTS. If you take 10060 Physics (10 ECTS) instead of 10054, the extra 5 ECTS count as electives. The MSc course 02452 can replace 02451.") });
   S("di", { grund: G0, obl: "41011 41012 41013 41028 41029 41031 41046 41051 41612 41615", pools: [], proj: "41020 BACH",
     need: { proj: 30, valg: 40 }, note: B("41612 Produktkonstruktion og dokumentation svarer til fagprojektet og skal være bestået, før bachelorprojektet.", "41612 Product Design and Documentation corresponds to the project course and must be passed before the bachelor project.") });
-  S("el", { grund: G, obl: "02138 02139|01035 22050 22051 30010 30400 34600 34601 34602 34721", pools: [], proj: "34720 BACH" });
+  S("el", { grund: G, obl: "02138 02139|01035 22050 22051 30010 30400 34600 34601 34602 34721", pools: [], proj: "34720 BACH",
+    note: B("Alle kurser i blokken er obligatoriske. Studielederen anbefaler kraftigt, at du tager både 02139 Digital Elektronik 2 og Matematik 2; det ene tæller så som valgfag.", "All courses in the block are compulsory. The head of studies strongly recommends taking both 02139 Digital Electronics 2 and Mathematics 2; one of them then counts as an elective.") });
   S("fys", { grund: "01001 01002 02002 02402 10033 26020 27020 42620", obl: "01035 10031 10034 10035 10036 10102 10317 34020", pools: [], proj: "34029 BACH" });
   S("geo", { grund: "01001 01002 02002 02402 10033 26020 27020 42620", obl: "01035 10034 30015|34600 30101 30102 30121 30131 30160 30400|10036",
-    pools: [[5, "30010 30020 30142 30150", B("Mindst 5 ECTS blandt fire retningsspecifikke kurser", "At least 5 ECTS from four programme-specific courses")]],
+    pools: [[5, "30010 30020 30142 30150", B("Mindst 5 ECTS blandt fire retningsspecifikke kurser (DTU anbefaler så mange som muligt)", "At least 5 ECTS from four programme-specific courses (DTU recommends as many as possible)")]],
     proj: "30110 BACH" });
   S("kt", { grund: "01001 01002 02002 02402|02403 10060 26001 27020 42620", obl: "",
     pools: [[55, "26002 26008 26124 26200 26220 26300 26400 26411 28010 28020 28140 28150 28160", B("Retningsspecifikke kurser (mindst 55 ECTS)", "Programme-specific courses (at least 55 ECTS)")]],
     proj: "26010 BACH" });
-  S("ai", { grund: G0, obl: "02105 02182 02445 02451 02461 02462 02463 02464 02465",
-    pools: [[5, "02467 02820", B("Mindst 5 ECTS blandt 02467 og 02820", "At least 5 ECTS from 02467 and 02820")]],
-    proj: "02466 BACH" });
+  S("ai", { grund: G0, obl: "02105 02182 02445 02451|02452 02461 02462 02463 02464 02465",
+    pools: [[5, "02467 02820", B("Mindst 5 ECTS blandt 02467 og 02820 (begge anbefales)", "At least 5 ECTS from 02467 and 02820 (both recommended)")]],
+    proj: "02466 BACH",
+    note: B("Vælger du kandidatkurset 02452 Machine learning, erstatter det 02451. Tager du både 02467 og 02820, tæller de ekstra 5 ECTS som valgfag.", "If you choose the MSc course 02452 Machine learning, it replaces 02451. If you take both 02467 and 02820, the extra 5 ECTS count as electives.") });
   S("lst", { grund: "01001 01002 02002 02402 10060 26050 27002 42620", obl: "22111 23214 26211 26400 27022 27023 27026",
     pools: [[20, "22100 22116 22140 22208 23220 23732 26411 26426 27027 27034 27035 27051 27062 27070 28025", B("Retningsspecifikke valgkurser (mindst 20 ECTS)", "Programme-specific electives (at least 20 ECTS)")]],
-    proj: "22180 BACH" });
+    proj: "22180 BACH",
+    note: B("Du kan profilere dig inden for bioteknologi, biomedicin eller bioinformatik med dine valg.", "You can specialise in biotechnology, biomedicine or bioinformatics through your choices.") });
   S("med", { grund: "01001 01002 02002 02402|02403 10060 26020 27020|KU005 42620|KU013", obl: "KU002 KU003 01035 22050 22460 22461",
     pools: [[7.5, "KU010 KU011", B("Semi-obligatoriske KU-kurser (7,5-10 ECTS)", "Semi-mandatory KU courses (7.5-10 ECTS)")]],
-    proj: "22462|KU004+KU006 BACH" });
+    proj: "22462|KU004+KU006 BACH",
+    note: B("Plads på KU002/KU003 er kun garanteret, hvis du følger den anbefalede plan på 1.-2. semester. KU010 og KU011 har begrænsede pladser, som fordeles ved lodtrækning; tager du begge, flyttes det sidste til valgfag. Studieplanen siger ikke, hvor de sidste 2,5 ECTS retningsspecifikke kommer fra, hvis du kun tager KU010, så spørg studievejledningen.", "A place on KU002/KU003 is only guaranteed if you follow the recommended plan in semesters 1-2. KU010 and KU011 have limited places allocated by lottery; if you take both, the last one moves to electives. The study plan does not say where the last 2.5 programme-specific ECTS come from if you only take KU010, so ask the study guidance.") });
   S("mek", { grund: G, obl: "41000 41312 41501 41603 41659 41714",
     pools: [[15, "41401 41045 41502 41511 41564 41619 41789 41814", B("Mindst 15 ECTS fra listen", "At least 15 ECTS from the list")]],
-    proj: "41801 BACH" });
+    proj: "41801 BACH",
+    note: B("Studieplanen skriver \"eller\" mellem 41401 og 41045, så formentlig tæller kun det ene i puljen. Spørg studievejledningen, hvis du vil tage begge.", "The study plan writes \"or\" between 41401 and 41045, so probably only one of them counts in the pool. Ask the study guidance if you want to take both.") });
   S("sw", { grund: "01001 01002 02100 02402|02403 10060 26020 27020 42620", obl: "01017 02104 02105 02132 02141 02157 02161",
     pools: [[5, "02155 02156 02159", B("Mindst 5 ECTS blandt 02155, 02156 og 02159", "At least 5 ECTS from 02155, 02156 and 02159")]],
     proj: "02122 BACH", split: { "02100": ["grund", "retn"] },
@@ -1466,7 +1472,8 @@ KP.study = {};
     pools: [[25, "22100 22111 22116 22118 22140 22208 22285 23220 23732 25106 26411 26426 27027 27070", B("Retningsspecifikke valgkurser (mindst 25 ECTS)", "Programme-specific electives (at least 25 ECTS)")]],
     proj: "22180 BACH" });
   S("tek", { grund: "01001 01002 02002 02402 10065 26800 27021 42620", obl: "01035 26805 26820 26840 28021 28145 47213 47214 47216 47217", pools: [], proj: "46060 47215 BACH",
-    need: { proj: 25 } });
+    need: { proj: 25 },
+    note: B("28244 og 47302 kræver normalt fremmøde på DTU Lyngby Campus. DTU anbefaler valgfagene i de anbefalede studieplaner, fordi de undervises online.", "28244 and 47302 normally require attendance at DTU Lyngby Campus. DTU recommends the electives in the recommended study plans because they are taught online.") });
 })();
 // </study>
 
@@ -2376,7 +2383,7 @@ var KPE = (function () {
     G.forEach(function (sl) { sl.forEach(function (alt) { alt.forEach(function (id) { grp[id] = "grund"; }); }); });
     P.forEach(function (sl) { sl.forEach(function (alt) { alt.forEach(function (id) { grp[id] = grp[id] || "proj"; }); }); });
     O.forEach(function (sl) { sl.forEach(function (alt) { alt.forEach(function (id) { grp[id] = grp[id] || "retn"; }); }); });
-    (S.pools || []).forEach(function (p) { p[1].split(/\s+/).filter(Boolean).forEach(function (id) { id = A[id] || id; grp[id] = grp[id] || "retn"; }); });
+    (S.pools || []).forEach(function (p) { p[1].split(/[\s|]+/).filter(Boolean).forEach(function (id) { id = A[id] || id; grp[id] = grp[id] || "retn"; }); });
     var r = { study: true, need: need, grund: 0, retn: 0, proj: 0, valgRaw: 0, beng: 0, all: 0, np: [], warn: [] };
     KP.courses.forEach(function (c) {
       if (!has.has(c.id)) return;
@@ -2398,7 +2405,11 @@ var KPE = (function () {
     if (mo.length) r.warn.push(["s_obl", mo.join(", ")]);
     (S.pools || []).forEach(function (p) {
       if (!p[0]) return;
-      var got = 0; p[1].split(/\s+/).filter(Boolean).forEach(function (id) { id = A[id] || id; if (has.has(id)) got += byId[id] ? byId[id].ects : 0; });
+      var got = 0; p[1].split(/\s+/).filter(Boolean).forEach(function (tok) {
+        // "a|b" i en pulje: kun ét af kurserne tæller
+        var hit = tok.split("|").map(function (id) { return A[id] || id; }).filter(function (id) { return has.has(id); })[0];
+        if (hit) got += byId[hit] ? byId[hit].ects : 0;
+      });
       if (got < p[0]) r.warn.push(["s_pool", p[2], got, p[0]]);
     });
     if (r.retn < need.retn) r.warn.push(["s_retn", r.retn, need.retn]);
@@ -2784,7 +2795,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     semN: ["{n}. semester", "Semester {n}"], semShort: ["{n}. sem.", "sem. {n}"], semFor: ["Semester for {c}", "Semester for {c}"],
     spH: ["Semesterplan", "Semester plan"],
     spLead: ["Hvert kursus ligger i et semester. Flyt det med vælgeren. To kurser på samme tidspunkt giver en advarsel.", "Every course sits in a semester. Move it with the selector. Two courses at the same time give a warning."],
-    spNote: ["Nye kurser lægges automatisk, hvor de ikke falder sammen med andre. Tidspunkterne er fra kursusbasen 2026/2027 og kan ændre sig.", "New courses are placed automatically where they do not clash with others. The times are from the course base 2026/2027 and may change."],
+    spNote: ["Nye kurser lægges automatisk, hvor de ikke falder sammen med andre. Tidspunkterne er fra kursusbasen 2026/2027 og kan ændre sig. Bachelorprojektet kan være 15, 17,5 eller 20 ECTS; planen regner med 15.", "New courses are placed automatically where they do not clash with others. The times are from the course base 2026/2027 and may change. The bachelor project can be 15, 17.5 or 20 ECTS; the plan assumes 15."],
     clashH: ["Overlap i skemaet:", "Timetable overlap:"],
     clashMod: ["{c} ligger på samme tidspunkt, {t}.", "{c} are at the same time, {t}."],
     clashPer: ["{c} ligger i samme 3-ugers periode, {t}.", "{c} are in the same three-week period, {t}."],
@@ -2820,7 +2831,7 @@ if (typeof module !== "undefined") module.exports = KPE;
   function nr(id) { var c = E.course(id); return c ? c.nr : id; }
   // Kursets rolle i den valgte bachelor: Miljøteknologi har hele studieplanen, de øvrige har obligatoriske (obl) og anbefalede puljekurser (retn).
   function hasStudy(B0) { return !!B0 && (B0.full || !!(KP.study && KP.study[B0.id])); }
-  function studyPool(id) { var S = KP.study && KP.study[pref.b]; if (!S) return false; return (S.pools || []).some(function (p) { return (" " + p[1] + " ").indexOf(" " + id + " ") >= 0; }); }
+  function studyPool(id) { var S = KP.study && KP.study[pref.b]; if (!S) return false; return (S.pools || []).some(function (p) { return p[1].split(/[\s|]+/).indexOf(id) >= 0; }); }
   function role(c) {
     if (pref.b === "miljo") return c.role;
     var p = KP.plans && KP.plans[pref.b];
