@@ -689,6 +689,22 @@ h1, h2, h3, h4, .top h1 { font-family: var(--display); font-weight: 800; letter-
 .yaymsg p::before { content: "🎉"; display: block; font-size: 40px; margin-bottom: 8px; }
 @media (prefers-reduced-motion: reduce) { #yay { transition: none; } }
 
+/* Studieskift: kurser bestået på en tidligere uddannelse */
+.tag-ok { background: var(--ok-bg); color: var(--ok); font-weight: 700; }
+.fld { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; font-weight: 700; }
+.fld select { flex: 1 1 220px; min-height: 40px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--field-line); background: var(--surface); color: var(--ink); font: 500 14px var(--body); }
+.clist { display: grid; gap: 6px; margin: 6px 0 12px; }
+.clist .crs { display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); cursor: pointer; }
+.clist .crs.on { border-color: var(--ok); background: var(--ok-bg); }
+.clist .crs input { width: 20px; height: 20px; accent-color: var(--ok); }
+.prevl { list-style: none; display: grid; gap: 6px; margin: 6px 0 12px; padding: 0; }
+.prevl li { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 6px 10px; padding: 10px 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.prevl .pn { grid-column: 1 / -1; font-weight: 600; }
+.prevl .pn .nr { font-family: var(--mono); font-weight: 500; margin-right: 4px; }
+.prevl .tag { justify-self: start; margin-left: 0; }
+.prevl .ec { font-family: var(--mono); font-size: 13px; }
+.find input[type="search"]#pq { width: 100%; min-height: 40px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--field-line); background: var(--surface); color: var(--ink); font: 400 15px var(--body); }
+
 </style>
 </head>
 <body data-view="start">
@@ -2742,6 +2758,16 @@ if (typeof module !== "undefined") module.exports = KPE;
     otherKU: ["Kurser på KU, CBS eller et andet universitet kan også tælle som valgfag, hvis DTU forhåndsgodkender dem. Søg i merit.dtu.dk, før du tilmelder dig; behandlingen kan tage op til otte uger. Skriv deres ECTS her. Hos CBS kan de også tælle i fagkravene: skriv dem som suppleringsfag ved den enkelte kandidat.", "Courses at KU, CBS or another university can also count as electives if DTU pre-approves them. Apply in merit.dtu.dk before you register; processing can take up to eight weeks. Enter their ECTS here. At CBS they can also count in the subject requirements: enter them as supplementary courses at the individual programme."],
     allSubj: ["Alle", "All"], allCourses: ["Kurser efter fagområde", "Courses by subject"],
     other: ["Andre valgfag og kurser uden for DTU", "Other electives and courses outside DTU"],
+    prevH: ["Skiftet studie? Kurser du allerede har bestået", "Changed programme? Courses you have already passed"],
+    prevLead: ["Har du taget et år eller mere på en anden DTU-uddannelse, kan dine beståede kurser tælle med her. Vælg din tidligere uddannelse og sæt flueben ved det, du har bestået. Kurserne flyttes ud af semesterplanen og tæller med der, hvor de passer i {b}; resten tæller som valgfag.", "If you have spent a year or more on another DTU programme, your passed courses can count here. Pick your previous programme and tick what you have passed. The courses move out of the semester plan and count where they fit in {b}; the rest count as electives."],
+    prevFrom: ["Tidligere uddannelse", "Previous programme"], prevPick: ["Vælg uddannelse", "Choose programme"],
+    prevYear: ["Første studieår på {b}", "First year of {b}"], prevOther: ["Andre kurser, du har bestået", "Other courses you have passed"],
+    prevQ: ["Søg efter kursus (nummer eller navn)", "Search for a course (number or name)"],
+    prevList: ["Bestået før skiftet", "Passed before the change"], prevNone: ["Ingen kurser markeret som bestået endnu.", "No courses marked as passed yet."],
+    prevCount: ["tæller som {r}", "counts as {r}"], rGrund: ["polyteknisk grundlag", "polytechnic foundation"], rObl: ["obligatorisk", "compulsory"], rRetn: ["retningsspecifikt", "programme-specific"], rPulje: ["valg i puljen", "pool choice"], rProj: ["projekt", "project"], rValg: ["valgfag", "elective"],
+    prevRm: ["Fjern", "Remove"], prevSum: ["{e} ECTS bestået", "{e} ECTS passed"],
+    prevRules: ["Sådan er reglerne hos DTU: Søger du ind gennem det almindelige optag, skal du søge merit for alle beståede kurser fra en uafsluttet uddannelse; kurser fra en uafsluttet DTU-uddannelse vurderer DTU selv. Har du bestået 60 ECTS, der svarer til første studieår på den nye retning, kan du søge studieretningsskift. Kan et kursus kun tælle som valgfag, må du selv vælge, om det skal overføres. Kurser over fem år gamle tæller kun med, hvis du selv ønsker det. Det endelige svar kommer fra DTU's meritteam via merit.dtu.dk.", "DTU's rules: if you apply through the ordinary admission, you must apply for credit for all passed courses from an unfinished programme; courses from an unfinished DTU programme are assessed by DTU itself. If you have passed 60 ECTS matching the first year of the new programme, you can apply for a change of field of study. If a course can only count as an elective, you may choose whether to transfer it. Courses older than five years only count if you want them to. The final decision comes from DTU's credit team via merit.dtu.dk."],
+    prevLinks: ["Læs DTU's regler om merit", "Read DTU's credit transfer rules"],
     otherLead: ["Tager du valgfag, der ikke står på listen, så skriv deres samlede ECTS her. De tæller med i dine {V} ECTS valgfag, men ikke i adgangskrav.", "If you take electives that are not listed, enter their total ECTS here. They count towards your {V} ECTS of electives but not towards admission requirements."],
     inReq: ["Krav til {m}", "Required for {m}"],
     tagMsc: ["kandidatkursus", "master's course"], tagBeng: ["diplom", "BEng"], tagMaybe: ["tæller måske", "may count"],
@@ -2826,6 +2852,8 @@ if (typeof module !== "undefined") module.exports = KPE;
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]; }); }
   function has() { return new Set(st.c); }
+  // Kurser, der skal placeres i semesterplanen (uden dem, der allerede er bestået før et studieskift)
+  function hasPlan() { var P = new Set(st.c); (st.prev || []).forEach(function (id) { P.delete(id); }); return P; }
   function master(id) { for (var i = 0; i < KP.masters.length; i++) if (KP.masters[i].id === id) return KP.masters[i]; return null; }
   function bach(id) { for (var i = 0; i < KP.bachelors.length; i++) if (KP.bachelors[i].id === id) return KP.bachelors[i]; return null; }
   // Konfetti, når man vælger Miljøteknologi
@@ -2872,12 +2900,12 @@ if (typeof module !== "undefined") module.exports = KPE;
     var p = KP.plans && KP.plans[pref.b];
     return !p ? "valgfri" : (p.obl[c.id] !== undefined ? "obl" : (p.retn[c.id] !== undefined ? "retn" : (p.pool[c.id] !== undefined || studyPool(c.id) ? "pulje" : "valgfri")));
   }
-  function blank(b) { return { c: (b && KP.defaults[b] ? KP.defaults[b] : []).slice(), other: 0, flags: {}, supp: {}, wish: [], sem: {}, extra: 0, pv: 1, ext: [], ms: { id: null, c: [], sem: {} } }; }
+  function blank(b) { return { c: (b && KP.defaults[b] ? KP.defaults[b] : []).slice(), other: 0, flags: {}, supp: {}, wish: [], sem: {}, extra: 0, pv: 1, ext: [], prev: [], prevB: "", ms: { id: null, c: [], sem: {} } }; }
   // Hvert valgt kursus får et semester: brugerens valg, ellers DTU's anbefalede, ellers det med færrest sammenfald.
   function syncSem() {
     if (!pref.b) return;
     E.setSems(6 + (st.extra || 0));
-    var H = has(), def = KP.semDefaults[pref.b] || {}, out = {};
+    var H = hasPlan(), def = KP.semDefaults[pref.b] || {}, out = {};
     H.forEach(function (id) { var n = Number(st.sem[id]) || def[id]; if (n) out[id] = n; });
     st.sem = E.autoPlace(KP, pref.b, H, out);
   }
@@ -2907,6 +2935,9 @@ if (typeof module !== "undefined") module.exports = KPE;
       var e = Math.round((Number(x && x.ects) || 0) * 2) / 2, n = Math.round(Number(x && x.sem));
       if (e > 0 && e <= 60 && n >= 1 && n <= 6 + st.extra) st.ext.push({ k: i + 1, sem: n, ects: e, name: String((x && x.name) || "").slice(0, 80), nr: String((x && x.nr) || "").slice(0, 10) });
     });
+    // Kurser bestået før et studieskift
+    st.prev = (Array.isArray(s.prev) ? s.prev : []).filter(function (id) { return !!E.course(id) && st.c.indexOf(id) >= 0; });
+    st.prevB = typeof s.prevB === "string" && bach(s.prevB) ? s.prevB : "";
     if (s.sem && typeof s.sem === "object") for (var k in s.sem) { var n = Math.round(Number(s.sem[k])); if (E.course(k) && n >= 1 && n <= 6 + st.extra) st.sem[k] = n; }
     return true;
   }
@@ -3040,6 +3071,7 @@ if (typeof module !== "undefined") module.exports = KPE;
 
   function pickRow(c, n, H) {
     var H2 = new Set(H), sem2 = {}, k, it = null, cl = [], tags = "";
+    (st.prev || []).forEach(function (id) { H2.delete(id); });
     H2.add(c.id); for (k in st.sem) sem2[k] = st.sem[k]; sem2[c.id] = n;
     var P = E.semPlan(KP, pref.b, H2, sem2);
     P.sems[n - 1].items.forEach(function (x) { if (x.id === c.id) it = x; });
@@ -3064,6 +3096,67 @@ if (typeof module !== "undefined") module.exports = KPE;
       '<div id="plist">' + pickList(n) + "</div></div>";
   }
 
+  // ---------- studieskift: kurser bestået på en tidligere uddannelse ----------
+  function fmtE(e) { return String(e).replace(".", pref.lang === "en" ? "." : ","); }
+  function prevEcts() { return st.prev.reduce(function (a, id) { var c = E.course(id); return a + (c ? c.ects : 0); }, 0); }
+  // Andre kurser, som et bestået kursus kan erstatte i den nye uddannelse ("a|b" i studieplanen og DTU's aliaser)
+  function altsOf(id) {
+    var S = KP.study && KP.study[pref.b], A = KP.studyAlias || {}, out = [], toks = [];
+    if (S) [S.grund, S.obl, S.proj].concat((S.pools || []).map(function (p) { return p[1]; })).forEach(function (x) { if (x) toks = toks.concat(String(x).split(/\s+/)); });
+    toks.forEach(function (t) { var ids = t.split(/[|+]/).map(function (x) { return x.split(":")[0]; }); if (t.indexOf("|") >= 0 && ids.indexOf(id) >= 0) ids.forEach(function (x) { if (x !== id) out.push(x); }); });
+    var canon = A[id] || id; for (var k in A) if ((A[k] === canon || k === canon) && k !== id) out.push(k);
+    if (canon !== id) out.push(canon);
+    return out;
+  }
+  function prevRole(c) {
+    var S = KP.study && KP.study[pref.b];
+    if (S) {
+      var inT = function (x) { return x && String(x).split(/[\s|+]+/).map(function (y) { return y.split(":")[0]; }).some(function (y) { return y === c.id || (KP.studyAlias || {})[c.id] === y; }); };
+      if (inT(S.grund)) return "rGrund"; if (inT(S.obl)) return "rObl"; if (inT(S.proj)) return "rProj";
+      if ((S.pools || []).some(function (p) { return inT(p[1]); })) return "rPulje";
+      return "rValg";
+    }
+    var r = role(c); return r === "obl" ? "rObl" : r === "retn" || r === "g3" ? "rRetn" : r === "pulje" || r === "g2" ? "rPulje" : "rValg";
+  }
+  function prevRow(c) {
+    var on = st.prev.indexOf(c.id) >= 0;
+    return '<label class="crs' + (on ? " on" : "") + '"><input type="checkbox" data-prev="' + esc(c.id) + '"' + (on ? " checked" : "") + '>' +
+      '<span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) + (on ? ' <span class="tag tag-ok">' + T("prevCount", { r: T(prevRole(c)) }) + "</span>" : "") + more(c) + '</span><span class="ec">' + c.ects + "</span></label>";
+  }
+  function prevBody(B0) {
+    var out = '<p class="grule">' + esc(T("prevLead", { b: L(B0) })) + "</p>";
+    var opts = KP.bachelors.filter(function (b) { return b.uni === B0.uni && b.id !== B0.id; }).map(function (b) { return '<option value="' + b.id + '"' + (st.prevB === b.id ? " selected" : "") + ">" + esc(L(b)) + "</option>"; }).join("");
+    out += '<label class="fld" for="prevb">' + T("prevFrom") + ' <select id="prevb" data-prevb="1"><option value="">' + T("prevPick") + "</option>" + opts + "</select></label>";
+    if (st.prevB) {
+      var def = KP.semDefaults[st.prevB] || {}, ids = Object.keys(def).filter(function (id) { return def[id] <= 2 && E.course(id); }).sort(function (a, b) { return def[a] - def[b] || (a < b ? -1 : 1); });
+      out += '<p class="pklab">' + esc(T("prevYear", { b: L(bach(st.prevB)) })) + '</p><div class="clist">' + ids.map(function (id) { return prevRow(E.course(id)); }).join("") + "</div>";
+    }
+    out += '<p class="pklab">' + T("prevOther") + '</p><div class="find"><label class="vh" for="pq">' + T("prevQ") + '</label><input type="search" id="pq" autocomplete="off" placeholder="' + T("prevQ") + '" value="' + esc(ui.pq || "") + '"></div><div id="prevhits">' + prevHits() + "</div>";
+    var list = st.prev.map(function (id) { return E.course(id); }).filter(Boolean);
+    out += '<p class="pklab">' + T("prevList") + "</p>" + (list.length ? '<ul class="prevl">' + list.map(function (c) {
+      return '<li><span class="pn"><span class="nr">' + esc(c.nr) + '</span> ' + esc(L(c.name)) + '</span><span class="tag tag-ok">' + T("prevCount", { r: T(prevRole(c)) }) + '</span><span class="ec">' + c.ects + ' ECTS</span><button type="button" class="rmb" data-prevrm="' + esc(c.id) + '" aria-label="' + esc(T("prevRm") + " " + c.nr + " " + L(c.name)) + '">' + T("prevRm") + "</button></li>";
+    }).join("") + "</ul>" : '<p class="small">' + T("prevNone") + "</p>");
+    out += '<p class="small">' + esc(T("prevRules")) + ' <a href="https://student.dtu.dk/studieregler/merit-og-studieophold-i-udlandet" target="_blank" rel="noopener">' + T("prevLinks") + "<span aria-hidden=\"true\">&nbsp;↗</span></a></p>";
+    return out;
+  }
+  function prevHits() {
+    var q = (ui.pq || "").trim().toLowerCase(); if (q.length < 2) return "";
+    var hits = KP.courses.filter(function (c) { return c.id !== "BACH" && c.id !== "SPEC" && (c.nr.toLowerCase().indexOf(q) === 0 || L(c.name).toLowerCase().indexOf(q) >= 0); }).slice(0, 8);
+    return '<div class="clist">' + hits.map(prevRow).join("") + "</div>";
+  }
+  function setPrev(id, on) {
+    var i = st.prev.indexOf(id);
+    if (on && i < 0) {
+      st.prev.push(id); toggle(id, true); delete st.sem[id];
+      // Et bestået alternativ erstatter standardkurset (fx 02403 i stedet for 02402)
+      altsOf(id).forEach(function (a) { if (st.prev.indexOf(a) < 0 && st.c.indexOf(a) >= 0) toggle(a, false); });
+    }
+    if (!on && i >= 0) {
+      st.prev.splice(i, 1);
+      if ((KP.defaults[pref.b] || []).indexOf(id) < 0) toggle(id, false);
+      altsOf(id).forEach(function (a) { if ((KP.defaults[pref.b] || []).indexOf(a) >= 0 && !altsOf(a).some(function (x) { return st.c.indexOf(x) >= 0; })) toggle(a, true); });
+    }
+  }
   function renderCourses(S0, B0) {
     var html = stepHead("kurser", "hCourses", hasStudy(B0) ? T("lCoursesFull") : (KP.plans[B0.id] ? T(KP.plans[B0.id].auto ? "lCoursesAuto" : "lCoursesPlan", { b: L(B0) }) : T("lCoursesLite", { b: L(B0) })));
     if (hasStudy(B0) && S0.warn.length) html += '<div class="acc">' + acc("todo", T("todo"), "", String(S0.warn.length), function () {
@@ -3077,6 +3170,7 @@ if (typeof module !== "undefined") module.exports = KPE;
       '<div class="btns"><button type="button" class="btn btn-ghost" id="gridtoggle" data-grid="1" aria-expanded="' + ui.showGrid + '">' + T(ui.showGrid ? "hideGrid" : "showGrid") + "</button>" +
       '<button type="button" class="btn btn-ghost" id="replan" data-replan="1">' + T(ui.rpArm ? "replan2" : "replan") + "</button></div>" +
       '<p class="small">' + T("spNote") + " " + T("pointNote") + "</p>";
+    html += '<div class="acc">' + acc("prev", T("prevH"), "", st.prev.length ? T("prevSum", { e: fmtE(prevEcts()) }) : "", function () { return prevBody(B0); }) + "</div>";
     if (hasStudy(B0)) html += '<div class="acc">' + acc("other", T("other"), "", st.other ? st.other + " ECTS" : "", function () {
       return '<p class="grule">' + T("otherLead") + '</p><p class="grule">' + T("otherKU") + "</p>" +
         '<label class="num" for="other">ECTS <input type="number" id="other" min="0" max="' + NEED.valg + '" step="2.5" value="' + st.other + '"></label>';
@@ -3531,7 +3625,7 @@ if (typeof module !== "undefined") module.exports = KPE;
       var S0 = E.summarize(KP, has(), st.other + extSum(), pref.b);
       NEED = S0.need || NEED;
       E.setSems(6 + (st.extra || 0));
-      SP = E.semPlan(KP, pref.b, has(), st.sem); CL = {};
+      SP = E.semPlan(KP, pref.b, hasPlan(), st.sem); CL = {};
       SP.sems.forEach(function (S) { S.clashes.forEach(function (cl) { cl.ids.forEach(function (id) { (CL[id] = CL[id] || []).push({ n: S.n, season: S.season, cl: cl }); }); }); });
       if (B0.uni === "dtu") { renderMeters(S0, B0); renderCourses(S0, B0); } else { $("meters").innerHTML = ""; $("p-kurser").innerHTML = ""; }
       renderMasters(); renderPlan(B0); if (B0.uni === "dtu") renderMaster(B0); else $("p-kandidatplan").innerHTML = "";
@@ -3558,6 +3652,8 @@ if (typeof module !== "undefined") module.exports = KPE;
     if (t.hasAttribute("data-course")) { toggle(t.getAttribute("data-course"), t.checked); commit(); }
     else if (t.hasAttribute("data-mmv")) { if (t.value !== "") { st.ms.sem[t.getAttribute("data-mmv")] = Number(t.value); commit(); } }
     else if (t.hasAttribute("data-xmv")) { var xm = Number(t.value), xi = Number(t.getAttribute("data-xmv")); if (xm) { st.ext.forEach(function (x) { if (x.k === xi) x.sem = xm; }); ui.semOpen[xm] = true; commit(); } }
+    else if (t.hasAttribute("data-prev")) { setPrev(t.getAttribute("data-prev"), t.checked); commit(); }
+    else if (t.hasAttribute("data-prevb")) { st.prevB = t.value; save(); render(); }
     else if (t.hasAttribute("data-mv")) { var mn = Number(t.value); if (mn) { st.sem[t.getAttribute("data-mv")] = mn; ui.semOpen[mn] = true; commit(); } }
     else if (t.hasAttribute("data-flag")) { st.flags[t.getAttribute("data-flag")] = t.checked; commit(); }
     else if (t.hasAttribute("data-supp")) { st.supp[t.getAttribute("data-supp")] = Math.max(0, Math.min(30, Number(t.value) || 0)); commit(); }
@@ -3566,6 +3662,7 @@ if (typeof module !== "undefined") module.exports = KPE;
   });
   // Søgning: kun kursuslisten tegnes om, så markøren bliver i søgefeltet.
   document.addEventListener("input", function (ev) {
+    if (ev.target.id === "pq") { ui.pq = ev.target.value; if ($("prevhits")) $("prevhits").innerHTML = prevHits(); return; }
     if (ev.target.id === "mq") { ui.mq = ev.target.value; if ($("mplist")) $("mplist").innerHTML = mPickList(ui.mAdd); return; }
     if (ev.target.id !== "q") return;
     ui.q = ev.target.value;
@@ -3597,6 +3694,7 @@ if (typeof module !== "undefined") module.exports = KPE;
       var xe = Math.round((Number($("xects").value) || 0) * 2) / 2, xk = st.ext.reduce(function (a, x) { return Math.max(a, x.k); }, 0) + 1;
       if (xe > 0 && xe <= 60 && st.ext.length < 12) { st.ext.push({ k: xk, sem: Number(t.getAttribute("data-xsave")), ects: xe, name: $("xname").value.trim().slice(0, 80), nr: $("xnr").value.trim().slice(0, 10) }); ui.extSem = null; commit(); }
     }
+    else if (t.hasAttribute("data-prevrm")) { setPrev(t.getAttribute("data-prevrm"), false); commit(); }
     else if (t.hasAttribute("data-xrm")) { var rk = Number(t.getAttribute("data-xrm")); st.ext = st.ext.filter(function (x) { return x.k !== rk; }); commit(); }
     else if (t.hasAttribute("data-pcat")) {
       var pc = t.getAttribute("data-pcat");
