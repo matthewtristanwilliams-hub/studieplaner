@@ -9,25 +9,26 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400..900&display=swap" rel="stylesheet">
 <style>
-:root { --bg: #dfe0e4; --surface: #ffffff; --ink: #141414; --muted: #55565c; --line: #cfd0d6; --dtu: #990000; --ruc: #0a6e52; }
-@media (prefers-color-scheme: dark) { :root { --bg: #111112; --surface: #1d1d1f; --ink: #f2f2f2; --muted: #b0b0b5; --line: #323236; --dtu: #f04a4a; --ruc: #5fd0a8; } }
+:root { --bg: #dfe0e4; --surface: #ffffff; --ink: #141414; --muted: #55565c; --line: #cfd0d6; --dtu: #990000; --ruc: #0a6e52; --cbs: #1f4f8f; }
+@media (prefers-color-scheme: dark) { :root { --bg: #111112; --surface: #1d1d1f; --ink: #f2f2f2; --muted: #b0b0b5; --line: #323236; --dtu: #f04a4a; --ruc: #5fd0a8; --cbs: #8db4ec; } }
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font: 400 16px/1.5 "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif; display: flex; }
 main { width: 100%; max-width: 760px; margin: auto; padding: 32px 18px 40px; }
 h1 { font-size: clamp(28px, 6vw, 40px); font-weight: 900; letter-spacing: -0.01em; margin: 0 0 6px; display: flex; align-items: center; gap: 12px; }
-h1::before { content: ""; width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, var(--dtu) 50%, var(--ruc) 50%); flex: none; }
+h1::before { content: ""; width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, var(--dtu) 33%, var(--ruc) 33% 66%, var(--cbs) 66%); flex: none; }
 .lede { color: var(--muted); margin: 0 0 26px; font-size: 17px; }
 .pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; }
 .card { display: block; padding: 26px 24px 24px; border-radius: 22px; background: var(--surface); color: inherit; text-decoration: none; border: 2px solid transparent; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 14px 30px -16px rgba(0,0,0,.28); transition: transform .15s, border-color .15s; }
 .card:hover, .card:focus-visible { transform: translateY(-2px); outline: none; }
 .card.dtu:hover, .card.dtu:focus-visible { border-color: var(--dtu); }
 .card.ruc:hover, .card.ruc:focus-visible { border-color: var(--ruc); }
+.card.cbs:hover, .card.cbs:focus-visible { border-color: var(--cbs); }
 .mark { display: inline-block; font-weight: 900; font-size: 30px; letter-spacing: .02em; }
-.dtu .mark { color: var(--dtu); } .ruc .mark { color: var(--ruc); }
+.dtu .mark { color: var(--dtu); } .ruc .mark { color: var(--ruc); } .cbs .mark { color: var(--cbs); }
 .name { display: block; font-weight: 800; font-size: 18px; margin: 4px 0 6px; }
 .what { display: block; color: var(--muted); font-size: 15px; }
 .go { display: inline-flex; margin-top: 16px; font-weight: 800; }
-.dtu .go { color: var(--dtu); } .ruc .go { color: var(--ruc); }
+.dtu .go { color: var(--dtu); } .ruc .go { color: var(--ruc); } .cbs .go { color: var(--cbs); }
 .last { margin: 18px 0 0; font-size: 15px; color: var(--muted); }
 .last a { color: inherit; font-weight: 800; }
 .foot { margin-top: 34px; font-size: 13px; color: var(--muted); border-left: 3px solid var(--line); padding-left: 10px; }
@@ -37,23 +38,24 @@ h1::before { content: ""; width: 26px; height: 26px; border-radius: 8px; backgro
 <body>
 <main>
   <h1>Studieplanlægger</h1>
-  <p class="lede">Planlæg hele din bachelor semester for semester og se dit ugeskema. Hvor læser du?</p>
+  <p class="lede">Planlæg hele din bachelor semester for semester. Hvor læser du?</p>
   <div class="pick">
     <a class="card dtu" href="/dtu/"><span class="mark">DTU</span><span class="name">Danmarks Tekniske Universitet</span><span class="what">Alle 20 bachelorer, semesterplan, ugeskema og kandidatplan.</span><span class="go">Åbn DTU-versionen&nbsp;→</span></a>
     <a class="card ruc" href="/ruc/"><span class="mark">RUC</span><span class="name">Roskilde Universitet</span><span class="what">Alle 7 bacheloruddannelser og 39 fag, ugeskema og merit.</span><span class="go">Åbn RUC-versionen&nbsp;→</span></a>
+    <a class="card cbs" href="/cbs/"><span class="mark">CBS</span><span class="name">Copenhagen Business School</span><span class="what">Alle 18 bacheloruddannelser, valgfag, kvartaler og merit.</span><span class="go">Åbn CBS-versionen&nbsp;→</span></a>
   </div>
   <p class="last" id="last" hidden></p>
-  <p class="foot">Uofficielt værktøj lavet af medstuderende Matthew Williams, ikke af DTU eller RUC. Din plan gemmes kun i din egen browser.</p>
+  <p class="foot">Uofficielt værktøj lavet af medstuderende Matthew Williams, ikke af DTU, RUC eller CBS. Din plan gemmes kun i din egen browser.</p>
 </main>
 <script>
 // Viser, hvilken version man sidst havde en plan i (planerne gemmes i browseren), uden at sende en videre.
 (function () {
   try {
     var dtu = Object.keys(localStorage).some(function (k) { return /^kp2-plan-/.test(k) && localStorage.getItem(k); });
-    var ruc = !!localStorage.getItem("rucplan.v1");
+    var ruc = !!localStorage.getItem("rucplan.v1"), cbs = !!localStorage.getItem("cbsplan.v1");
     var el = document.getElementById("last");
-    if (dtu || ruc) {
-      el.innerHTML = "Du har en gemt plan i " + [dtu ? '<a href="/dtu/">DTU-versionen</a>' : "", ruc ? '<a href="/ruc/">RUC-versionen</a>' : ""].filter(Boolean).join(" og ") + ".";
+    if (dtu || ruc || cbs) {
+      el.innerHTML = "Du har en gemt plan i " + [dtu ? '<a href="/dtu/">DTU-versionen</a>' : "", ruc ? '<a href="/ruc/">RUC-versionen</a>' : "", cbs ? '<a href="/cbs/">CBS-versionen</a>' : ""].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " og $1") + ".";
       el.hidden = false;
     }
   } catch (e) { }

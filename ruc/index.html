@@ -912,7 +912,7 @@ if (typeof module !== 'undefined') module.exports = RUC;
     unofficial: ["Uofficielt værktøj lavet af medstuderende Matthew Williams, ikke af RUC. Kurser, hold og tider er hentet fra study.ruc.dk den {d}. Opbygningen er udledt af RUC's kursuskatalog og fagsider; studieordningerne er ikke gennemgået. Tjek altid study.ruc.dk og din studieordning.", "Unofficial tool made by fellow student Matthew Williams, not by RUC. Courses, teams and times come from study.ruc.dk, fetched {d}. The structure is derived from RUC's course catalogue and subject pages; the study regulations have not been reviewed. Always check study.ruc.dk and your study regulation."],
     saved: ["Din plan gemmes kun i denne browser.", "Your plan is only saved in this browser."], reset: ["Nulstil min plan", "Reset my plan"], reset2: ["Tryk igen for at slette din plan", "Press again to delete your plan"],
     rules: ["Regler og noter", "Rules and notes"], so: ["Studieordning (pdf)", "Study regulation (pdf)"], rucPage: ["Fagets side på ruc.dk", "The subject's page on ruc.dk"], adg: ["Adgangskrav:", "Admission requirement:"],
-    unsure: ["Usikkert:", "Uncertain:"], dtuLink: ["Går du på DTU? Brug DTU-versionen", "Studying at DTU? Use the DTU version"], track: ["Spor:", "Track:"], trackN: ["Spor {t}", "Track {t}"]
+    unsure: ["Usikkert:", "Uncertain:"], dtuLink: ["Går du på DTU? Brug DTU-versionen", "Studying at DTU? Use the DTU version"], cbsLink: ["Går du på CBS? Brug CBS-versionen", "Studying at CBS? Use the CBS version"], track: ["Spor:", "Track:"], trackN: ["Spor {t}", "Track {t}"]
   };
   var DAYS = [["man", "Mon"], ["tir", "Tue"], ["ons", "Wed"], ["tor", "Thu"], ["fre", "Fri"]];
   var pref = { lang: "da", prog: null, view: "uddannelse" }, st = blank(), ui = { open: {}, add: null, q: "", grid: {}, pq: "", arm: null };
@@ -1166,7 +1166,7 @@ if (typeof module !== 'undefined') module.exports = RUC;
 
   function renderStart() {
     var p = prog(), h = stepHead(1, T("hProg"));
-    var dtu = '<p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/dtu/">' + T("dtuLink") + '<span aria-hidden="true">&nbsp;→</span></a></p>';
+    var dtu = '<p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/dtu/">' + T("dtuLink") + '<span aria-hidden="true">&nbsp;→</span></a></p><p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/cbs/">' + T("cbsLink") + '<span aria-hidden="true">&nbsp;→</span></a></p>';
     h += '<div class="bgrid">' + RUC.progs.map(function (q) { return '<button type="button" class="bpick' + (p && p.id === q.id ? " cur" : "") + '" id="p-' + q.id + '" data-prog="' + q.id + '" aria-pressed="' + !!(p && p.id === q.id) + '"><span class="bn">' + esc(L(q.name, q.nameEn)) + "</span></button>"; }).join("") + "</div>";
     if (!p) return h + dtu;
     var f1 = fag(st.f1);

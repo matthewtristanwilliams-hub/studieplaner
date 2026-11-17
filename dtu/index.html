@@ -2720,7 +2720,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     toSem: ["Se semesterplanen", "See the semester plan"],
     lead: ["En studieplanlægger for bachelorstuderende på DTU: vælg din bachelor, læg din semesterplan, og se hvilke kandidater du kan søge, og hvilke valgfag de kræver. Denne hjemmeside er kodet ud af et dybt had til studieplan.dtu.dk.", "A study planner for bachelor students at DTU: pick your bachelor, build your semester plan, and see which master's programmes you can apply for and which electives they require. This website was coded out of a deep hatred of studieplan.dtu.dk."],
     unofficial: ["Uofficielt værktøj lavet af medstuderende Matthew Williams, ikke af DTU. Kravene er hentet fra DTU den {d} og kan ændre sig. Tjek altid den officielle side, som der er link til ved hver kandidat, før du vælger fag eller søger.", "Unofficial tool made by fellow student Matthew Williams, not by DTU. The requirements were collected from DTU on {d} and may change. Always check the official page linked at each programme before you choose courses or apply."],
-    pickTitle: ["Hvad læser du?", "What do you study?"], rucLink: ["Går du på RUC? Brug RUC-versionen", "Studying at RUC? Use the RUC version"],
+    pickTitle: ["Hvad læser du?", "What do you study?"], rucLink: ["Går du på RUC? Brug RUC-versionen", "Studying at RUC? Use the RUC version"], cbsLink: ["Går du på CBS? Brug CBS-versionen", "Studying at CBS? Use the CBS version"],
     pickLead: ["Vælg din bachelor på DTU.", "Choose your DTU bachelor."],
     pickFull: ["Hele studieplanen er lagt ind", "Full study plan included"],
     pickOld: ["Ældre retninger", "Earlier programmes"],
@@ -3612,7 +3612,7 @@ if (typeof module !== "undefined") module.exports = KPE;
       (one ? "" : '<p class="unibar"><strong>' + esc(L(U.name)) + '</strong> <button type="button" class="linkbtn" id="chuni" data-chuni="1">' + T("chUni") + "</button></p>") +
       '<div class="bgrid">' + cur.map(btn).join("") + "</div>" +
       (old.length ? '<h3 class="uni">' + T("pickOld") + '</h3><div class="bgrid">' + old.map(btn).join("") + "</div>" : "") +
-      '<p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/ruc/">' + T("rucLink") + '<span aria-hidden="true">&nbsp;→</span></a></p>' + (B0 && B0.uni === u ? stepNav("bachelor") : "");
+      '<p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/ruc/">' + T("rucLink") + '<span aria-hidden="true">&nbsp;→</span></a></p><p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/cbs/">' + T("cbsLink") + '<span aria-hidden="true">&nbsp;→</span></a></p>' + (B0 && B0.uni === u ? stepNav("bachelor") : "");
   }
 
   function render() {
