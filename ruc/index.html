@@ -704,6 +704,10 @@ h1, h2, h3, h4, .top h1 { font-family: var(--display); font-weight: 800; letter-
 .prevl .ec { font-family: var(--mono); font-size: 13px; }
 .find input[type="search"]#pq { width: 100%; min-height: 40px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--field-line); background: var(--surface); color: var(--ink); font: 400 15px var(--body); }
 
+.otheruni { margin: 18px 0 6px; font-weight: 700; }
+.otheruni a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 16px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); text-decoration: none; }
+.otheruni a:hover { border-color: var(--accent); }
+
 /* RUC-version: grøn accent i stedet for DTU-rød, samme bløde layout */
 :root { --accent: #0a6e52; --accent-ink: #ffffff; --accent-soft: #dcefe7; --warn: #0a6e52; --warn-bg: #dcefe7; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent: #5fd0a8; --accent-ink: #0c1712; --accent-soft: #163a2e; --warn: #5fd0a8; --warn-bg: #163a2e; } }
@@ -908,7 +912,7 @@ if (typeof module !== 'undefined') module.exports = RUC;
     unofficial: ["Uofficielt værktøj lavet af medstuderende Matthew Williams, ikke af RUC. Kurser, hold og tider er hentet fra study.ruc.dk den {d}. Opbygningen er udledt af RUC's kursuskatalog og fagsider; studieordningerne er ikke gennemgået. Tjek altid study.ruc.dk og din studieordning.", "Unofficial tool made by fellow student Matthew Williams, not by RUC. Courses, teams and times come from study.ruc.dk, fetched {d}. The structure is derived from RUC's course catalogue and subject pages; the study regulations have not been reviewed. Always check study.ruc.dk and your study regulation."],
     saved: ["Din plan gemmes kun i denne browser.", "Your plan is only saved in this browser."], reset: ["Nulstil min plan", "Reset my plan"], reset2: ["Tryk igen for at slette din plan", "Press again to delete your plan"],
     rules: ["Regler og noter", "Rules and notes"], so: ["Studieordning (pdf)", "Study regulation (pdf)"], rucPage: ["Fagets side på ruc.dk", "The subject's page on ruc.dk"], adg: ["Adgangskrav:", "Admission requirement:"],
-    unsure: ["Usikkert:", "Uncertain:"], track: ["Spor:", "Track:"], trackN: ["Spor {t}", "Track {t}"]
+    unsure: ["Usikkert:", "Uncertain:"], dtuLink: ["Går du på DTU? Brug DTU-versionen", "Studying at DTU? Use the DTU version"], track: ["Spor:", "Track:"], trackN: ["Spor {t}", "Track {t}"]
   };
   var DAYS = [["man", "Mon"], ["tir", "Tue"], ["ons", "Wed"], ["tor", "Thu"], ["fre", "Fri"]];
   var pref = { lang: "da", prog: null, view: "uddannelse" }, st = blank(), ui = { open: {}, add: null, q: "", grid: {}, pq: "", arm: null };
@@ -1162,8 +1166,9 @@ if (typeof module !== 'undefined') module.exports = RUC;
 
   function renderStart() {
     var p = prog(), h = stepHead(1, T("hProg"));
+    var dtu = '<p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/">' + T("dtuLink") + '<span aria-hidden="true">&nbsp;→</span></a></p>';
     h += '<div class="bgrid">' + RUC.progs.map(function (q) { return '<button type="button" class="bpick' + (p && p.id === q.id ? " cur" : "") + '" id="p-' + q.id + '" data-prog="' + q.id + '" aria-pressed="' + !!(p && p.id === q.id) + '"><span class="bn">' + esc(L(q.name, q.nameEn)) + "</span></button>"; }).join("") + "</div>";
-    if (!p) return h;
+    if (!p) return h + dtu;
     var f1 = fag(st.f1);
     h += "<h3>" + T("hFag1") + "</h3><p class=\"small\">" + esc(T("lFag1", { p: L(p.name, p.nameEn) })) + "</p>";
     var firsts = p.fagIds.map(fag).filter(Boolean), ones = p.oneIds.map(fag).filter(Boolean);
