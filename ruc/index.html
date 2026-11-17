@@ -1166,7 +1166,7 @@ if (typeof module !== 'undefined') module.exports = RUC;
 
   function renderStart() {
     var p = prog(), h = stepHead(1, T("hProg"));
-    var dtu = '<p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/">' + T("dtuLink") + '<span aria-hidden="true">&nbsp;→</span></a></p>';
+    var dtu = '<p class="otheruni"><a href="https://studieplaner.axiom-dk.dk/dtu/">' + T("dtuLink") + '<span aria-hidden="true">&nbsp;→</span></a></p>';
     h += '<div class="bgrid">' + RUC.progs.map(function (q) { return '<button type="button" class="bpick' + (p && p.id === q.id ? " cur" : "") + '" id="p-' + q.id + '" data-prog="' + q.id + '" aria-pressed="' + !!(p && p.id === q.id) + '"><span class="bn">' + esc(L(q.name, q.nameEn)) + "</span></button>"; }).join("") + "</div>";
     if (!p) return h + dtu;
     var f1 = fag(st.f1);
