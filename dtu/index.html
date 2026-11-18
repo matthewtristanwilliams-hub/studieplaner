@@ -708,6 +708,12 @@ h1, h2, h3, h4, .top h1 { font-family: var(--display); font-weight: 800; letter-
 .otheruni { margin: 18px 0 6px; font-weight: 700; }
 .otheruni a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 16px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); text-decoration: none; }
 .otheruni a:hover { border-color: var(--accent); }
+/* Læg kurserne for mig */
+.approp { margin: 12px 0; }
+.exl { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.exl li { padding: 9px 12px; border-radius: 12px; background: var(--none-bg); border-left: 4px solid var(--muted); font-size: 14.5px; }
+.exl li.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+.exl li.no { border-left-color: var(--bad); }
 
 </style>
 </head>
@@ -2638,7 +2644,44 @@ var KPE = (function () {
     return map;
   }
 
-  return { setSems: setSems, offOf: offOf, altInfo: altInfo, validSems: validSems, only: only, semPlan: semPlan, autoPlace: autoPlace, init: init, ects: ects, plan: plan, summarize: summarize, evalRule: evalRule, evalMaster: evalMaster, suggest: suggest, suggestInto: suggestInto, opens: opens, course: function (id) { return byId[id]; } };
+  // ---------- læg alle kurser for mig ----------
+  // Pris for en placering: sammenfald og overfyldte semestre er dyrest, derefter et semester, der skal holdes fri til
+  // udveksling, og til sidst afstanden til DTU's anbefalede semester og en jævn fordeling.
+  function planCost(K, b, has, map, o) {
+    var P = semPlan(K, b, has, map, o.alt), c = P.clashes * 1000 + P.unplaced.length * 5000, k;
+    P.sems.forEach(function (S) {
+      if (S.ects > 30) c += (S.ects - 30) * 80;
+      if (o.exch && S.n === o.exch) c += S.ects * 400;
+      else if (S.n <= 6) c += Math.abs(S.ects - 30) * 0.4;
+    });
+    for (k in map) { var h = o.home[k]; if (h) c += Math.abs(map[k] - h) * 3; }
+    return { cost: c, P: P };
+  }
+  function optimize(KP, b, has, start, o) {
+    o = o || {}; o.home = o.home || {};
+    var list = KP.courses.filter(function (c) { return has.has(c.id); }), K = { courses: list }, map = {};
+    list.forEach(function (c) { var vs = validSems(c, b); map[c.id] = vs.indexOf(Number(start[c.id])) >= 0 ? Number(start[c.id]) : (vs.indexOf(o.home[c.id]) >= 0 ? o.home[c.id] : vs[0]); if (!map[c.id]) delete map[c.id]; });
+    var cur = planCost(K, b, has, map, o), better = true, pass = 0;
+    function tryMap() { var t = planCost(K, b, has, map, o); if (t.cost < cur.cost - 1e-9) { cur = t; return true; } return false; }
+    while (better && pass++ < 15) {
+      better = false;
+      list.forEach(function (c) {
+        validSems(c, b).forEach(function (n) { var old = map[c.id]; if (n === old) return; map[c.id] = n; if (tryMap()) better = true; else map[c.id] = old; });
+      });
+      if (better) continue;
+      // byt to kurser, der kan ligge i hinandens semestre
+      for (var i = 0; i < list.length; i++) for (var j = i + 1; j < list.length; j++) {
+        var a = list[i].id, z = list[j].id, na = map[a], nz = map[z];
+        if (na === nz || validSems(list[i], b).indexOf(nz) < 0 || validSems(list[j], b).indexOf(na) < 0) continue;
+        map[a] = nz; map[z] = na; if (tryMap()) better = true; else { map[a] = na; map[z] = nz; }
+      }
+    }
+    var over = cur.P.sems.filter(function (S) { return S.ects > 30; }).map(function (S) { return S.n; });
+    var left = o.exch ? cur.P.sems[o.exch - 1].items : [];
+    return { map: map, P: cur.P, cost: cur.cost, clashes: cur.P.clashes, over: over, left: left.map(function (it) { return it.id; }), leftEcts: o.exch ? cur.P.sems[o.exch - 1].ects : 0 };
+  }
+
+  return { optimize: optimize, setSems: setSems, offOf: offOf, altInfo: altInfo, validSems: validSems, only: only, semPlan: semPlan, autoPlace: autoPlace, init: init, ects: ects, plan: plan, summarize: summarize, evalRule: evalRule, evalMaster: evalMaster, suggest: suggest, suggestInto: suggestInto, opens: opens, course: function (id) { return byId[id]; } };
 })();
 if (typeof module !== "undefined") module.exports = KPE;
 
@@ -2779,6 +2822,26 @@ if (typeof module !== "undefined") module.exports = KPE;
     otherLead: ["Tager du valgfag, der ikke står på listen, så skriv deres samlede ECTS her. De tæller med i dine {V} ECTS valgfag, men ikke i adgangskrav.", "If you take electives that are not listed, enter their total ECTS here. They count towards your {V} ECTS of electives but not towards admission requirements."],
     inReq: ["Krav til {m}", "Required for {m}"],
     tagMsc: ["kandidatkursus", "master's course"], tagBeng: ["diplom", "BEng"], tagMaybe: ["tæller måske", "may count"],
+    apH: ["Læg kurserne for mig", "Lay out my courses"],
+    apLead: ["Vælg alle de kurser, du vil have, uden at tænke på semestre. Planlæggeren lægger dem, så der ikke er sammenfald, intet semester får over 30 ECTS, og kurserne så vidt muligt ligger, hvor DTU anbefaler. Vil du på udveksling, holder den et semester fri.", "Pick all the courses you want without thinking about semesters. The planner places them so nothing clashes, no semester goes over 30 ECTS, and courses stay where DTU recommends as far as possible. If you want to go on exchange, it keeps a semester free."],
+    apQ: ["Søg efter kurser at tilføje", "Search for courses to add"], apQHint: ["Skriv mindst to bogstaver eller et kursusnummer. Kurserne lægges automatisk i et semester.", "Type at least two letters or a course number. Courses are placed in a semester automatically."],
+    apAdded: ["{n} kurser i din plan", "{n} courses in your plan"],
+    apExL: ["Udveksling", "Exchange"], apExNo: ["Ingen udveksling", "No exchange"], apExOpt: ["{n}. semester ({s})", "Semester {n} ({s})"],
+    apRun: ["Læg mine kurser", "Lay out my courses"], apUse: ["Brug forslaget", "Use this plan"], apNo: ["Behold min plan", "Keep my plan"],
+    apNone: ["Din plan virker allerede: ingen kurser skal flyttes.", "Your plan already works: no courses need to move."],
+    apMoves: ["Forslaget flytter {n} kurser:", "The proposal moves {n} courses:"], apMoves1: ["Forslaget flytter ét kursus:", "The proposal moves one course:"], apMove: ["{c}: {a}. → {b}. semester", "{c}: semester {a} → {b}"], apNew: ["{c}: {b}. semester", "{c}: semester {b}"],
+    apOk: ["Ingen sammenfald, og intet semester er over 30 ECTS.", "No clashes, and no semester is over 30 ECTS."],
+    apBadCl: ["{n} sammenfald kan ikke undgås med de kurser, du har valgt.", "{n} clashes cannot be avoided with the courses you have chosen."], apBadOv: ["Disse semestre har stadig over 30 ECTS: {s}.", "These semesters are still over 30 ECTS: {s}."],
+    apExFree: ["{n}. semester er holdt fri til udveksling.", "Semester {n} is kept free for exchange."], apExLeft: ["{n}. semester kan ikke tømmes helt: {c} skal stadig ligge der.", "Semester {n} cannot be emptied completely: {c} must still be there."],
+    apExH: ["Kan du tage på udveksling?", "Can you go on exchange?"],
+    apExLead: ["DTU anbefaler 5. semester. Et helt semester i udlandet er 30 ECTS (13-ugers og 3-ugers periode). Planlæggeren prøver for hvert semester at flytte dine DTU-kurser væk.", "DTU recommends semester 5. A full semester abroad is 30 ECTS (13-week and 3-week period). For each semester the planner tries to move your DTU courses away."],
+    apYes0: ["Ja, det passer allerede", "Yes, it already fits"], apYes: ["Ja, hvis {k} kurser flyttes", "Yes, if {k} courses move"], apYes1: ["Ja, hvis ét kursus flyttes", "Yes, if one course moves"], apNoEx: ["Nej", "No"],
+    apWhyLeft: ["{c} kan ikke flyttes væk", "{c} cannot be moved away"], apWhyCl: ["det giver sammenfald", "it causes clashes"], apWhyOv: ["{s}. semester bliver over 30 ECTS", "semester {s} goes over 30 ECTS"],
+    apPlanEx: ["Planlæg med udveksling her", "Plan with exchange here"],
+    apValg: ["De 30 ECTS fra udlandet tæller som udgangspunkt som valgfrie kurser og skal forhåndsgodkendes af DTU (merit.dtu.dk).", "The 30 ECTS from abroad normally count as electives and must be pre-approved by DTU (merit.dtu.dk)."],
+    apDrop: ["Din plan har allerede {a} ECTS, så du skal fjerne {b} ECTS valgfrie kurser for at gøre plads til udvekslingen.", "Your plan already has {a} ECTS, so you need to remove {b} ECTS of electives to make room for the exchange."],
+    apDropNo: ["Din plan har {a} ECTS uden valgfrie kurser, der kan fjernes, så der er ikke plads til 30 ECTS fra udlandet inden for 180 ECTS.", "Your plan has {a} ECTS without electives that can be removed, so there is no room for 30 ECTS from abroad within 180 ECTS."],
+    apExAdded: ["Udveksling", "Exchange"],
     altA: ["Vælg tidspunkt for {c}", "Choose the time for {c}"], eller: [" eller ", " or "], jan: ["januar", "January"], jun: ["juni", "June"], aug: ["august", "August"],
     hMasters: ["Hvilke kandidater kan du søge?", "Which master's programmes can you apply for?"],
     lMasters: ["Tryk på en kandidat for at se kravene. Stjernen gemmer den som ønske.", "Press a programme to see the requirements. The star saves it as a wish."],
@@ -3177,6 +3240,7 @@ if (typeof module !== "undefined") module.exports = KPE;
       var note = KP.study && KP.study[B0.id] && KP.study[B0.id].note;
       return '<ul class="notes">' + S0.warn.map(function (w) { return "<li>" + esc(T(w[0], { 0: typeof w[1] === "object" ? L(w[1]) : w[1], 1: w[2], 2: w[3] })) + "</li>"; }).join("") + "</ul>" + (note ? '<p class="small">' + esc(L(note)) + "</p>" : "");
     }, "warnacc") + "</div>";
+    html += '<div class="acc">' + acc("auto", T("apH"), "", ui.ap ? "" : "", autoBody) + "</div>";
     html += (SP.clashes ? '<p class="clash" id="semstatus" role="status"><strong>' + T(SP.clashes === 1 ? "banner1" : "banner", { n: SP.clashes }) + "</strong></p>" : '<p class="okline" id="semstatus" role="status">' + T("noClash") + "</p>") +
       '<div class="sems">' + SP.sems.map(semCard).join("") + "</div>" +
       '<div class="btns">' + (st.extra < 4 ? '<button type="button" class="btn btn-ghost" id="addsemester" data-extra="1">+ ' + T("addSemX") + "</button>" : "") +
@@ -3388,6 +3452,85 @@ if (typeof module !== "undefined") module.exports = KPE;
     if (!opts.length) return "";
     return '<select class="mvs" id="mv-' + c.id + '" data-mv="' + c.id + '" aria-label="' + esc(T("moveA", { c: c.nr + " " + L(c.name) })) + '"><option value="">' + T("move") + "</option>" +
       opts.map(function (n) { return '<option value="' + n + '">' + T("moveTo", { n: n, s: T(n % 2 ? "autumn" : "spring").toLowerCase() }) + "</option>"; }).join("") + "</select>";
+  }
+  // ---------- læg kurserne for mig: vælg kurser uden semester, få dem lagt, og se om du kan på udveksling ----------
+  var AUTO = { key: "", ex: null };
+  function nameList(ids) { return ids.filter(function (id, i) { return ids.indexOf(id) === i; }).map(function (id) { var c = E.course(id); return c ? (/^\d/.test(c.nr) ? c.nr + " " : "") + L(c.name) : id; }).join(", "); }
+  function autoHome() { var d = KP.semDefaults[pref.b] || {}, h = {}, k; for (k in d) h[k] = d[k]; return h; }
+  function autoRun(exch) { E.setSems(6 + (st.extra || 0)); return E.optimize(KP, pref.b, hasPlan(), st.sem, { exch: exch || 0, alt: st.alt, home: autoHome() }); }
+  function autoMoves(r) { var out = []; hasPlan().forEach(function (id) { if (r.map[id] && r.map[id] !== st.sem[id]) out.push({ id: id, a: st.sem[id] || 0, b: r.map[id] }); }); return out; }
+  function exchSems() { var o = []; for (var n = 3; n <= 6 + st.extra; n++) o.push(n); return o; }
+  function exchAll() {
+    var key = JSON.stringify([pref.b, st.c, st.sem, st.alt, st.extra, st.prev]);
+    if (AUTO.key !== key) {
+      AUTO.key = key;
+      // Sammenfald og fulde semestre, som planen også har uden udveksling, skyldes ikke udvekslingen
+      var r0 = autoRun(0);
+      AUTO.ex = exchSems().map(function (n) {
+        var r = autoRun(n), over = r.over.filter(function (s) { return r0.over.indexOf(s) < 0; }), cl = Math.max(0, r.clashes - r0.clashes);
+        return { n: n, r: r, over: over, cl: cl, moves: autoMoves(r).length, ok: !r.leftEcts && !cl && !over.length };
+      });
+    }
+    return AUTO.ex;
+  }
+  // ECTS i planen ud over et evt. udvekslingssemester: hvor meget skal væk for at gøre plads til 30 ECTS fra udlandet?
+  function exchRoom(n) {
+    var tot = 0, valg = 0;
+    has().forEach(function (id) { var c = E.course(id); if (!c) return; tot += c.ects; if (role(c) === "valgfri") valg += c.ects; });
+    tot += (st.other || 0) + extSum() - extSum(n);
+    var drop = Math.max(0, tot + 30 - 180);
+    return { tot: tot, drop: drop, valg: valg };
+  }
+  function wishList() {
+    var q = (ui.wq || "").trim().toLowerCase(), words = q ? q.split(/\s+/) : [], H = has();
+    if (q.length < 2) return '<p class="small">' + T("apQHint") + "</p>";
+    var pool = KP.courses.filter(function (c) {
+      if (H.has(c.id) || !E.validSems(c, pref.b).length) return false;
+      if (c.pf && role(c) === "valgfri") return false;
+      if (c.pre && c.pre.indexOf(pref.b) < 0 && !c.np) return false;
+      return matchWords(c, words);
+    }).sort(function (x, y) { return (pickRank(x) - pickRank(y)) || (x.nr < y.nr ? -1 : 1); });
+    if (!pool.length) return '<p class="small" role="status">' + T("noHit") + "</p>";
+    return '<p class="pklab" role="status">' + T("pkHits", { n: pool.length }) + '</p><div class="picks">' + pool.slice(0, 12).map(function (c) {
+      var when = E.offOf(c, pref.b).map(function (x) { return altText(x, false, false); }).join(" / ");
+      return '<div class="pick"><button type="button" class="addb" id="wa-' + c.id + '" data-wadd="' + c.id + '" aria-label="' + esc(T("addA", { c: c.nr + " " + L(c.name) })) + '">+</button>' +
+        '<span class="nr">' + esc(c.nr) + '</span><span class="nm">' + esc(L(c.name)) + more(c) + '</span><span class="ec">' + c.ects + '</span><span class="sk">' + esc(when) + "</span></div>";
+    }).join("") + "</div>";
+  }
+  function autoPreview(r, exch) {
+    var mv = autoMoves(r), h = "";
+    h += mv.length ? "<p>" + T(mv.length === 1 ? "apMoves1" : "apMoves", { n: mv.length }) + '</p><ul class="notes">' + mv.map(function (m) { var c = E.course(m.id); return "<li>" + esc(T(m.a ? "apMove" : "apNew", { c: c.nr + " " + L(c.name), a: m.a, b: m.b })) + "</li>"; }).join("") + "</ul>" : "<p>" + T("apNone") + "</p>";
+    if (r.clashes) h += '<p class="clash">' + esc(T("apBadCl", { n: r.clashes })) + "</p>";
+    if (r.over.length) h += '<p class="clash">' + esc(T("apBadOv", { s: r.over.join(", ") })) + "</p>";
+    if (!r.clashes && !r.over.length) h += '<p class="okline">' + T("apOk") + "</p>";
+    if (exch) {
+      h += r.leftEcts ? '<p class="clash">' + esc(T("apExLeft", { n: exch, c: nameList(r.left) })) + "</p>" : '<p class="okline">' + T("apExFree", { n: exch }) + "</p>";
+      h += exchNote(exch);
+    }
+    return h + '<div class="btns">' + (mv.length || exch ? '<button type="button" class="btn" id="apuse" data-apuse="1">' + T("apUse") + "</button>" : "") + '<button type="button" class="btn btn-ghost" id="apno" data-apno="1">' + T(mv.length || exch ? "apNo" : "closeAdd") + "</button></div>";
+  }
+  function exchNote(n) {
+    var R = exchRoom(n), h = '<p class="small">' + T("apValg") + "</p>";
+    if (R.drop > 0) h += '<p class="small"><strong>' + esc(T(R.drop <= R.valg ? "apDrop" : "apDropNo", { a: fmtE(R.tot), b: fmtE(R.drop) })) + "</strong></p>";
+    return h;
+  }
+  function autoBody() {
+    var h = '<p class="grule">' + T("apLead") + "</p>" +
+      '<div class="find"><label class="vh" for="wq">' + T("apQ") + '</label><input type="search" id="wq" autocomplete="off" placeholder="' + T("apQ") + '" value="' + esc(ui.wq || "") + '"></div><div id="wlist">' + wishList() + "</div>" +
+      '<p class="small">' + T("apAdded", { n: hasPlan().size }) + "</p>" +
+      '<div class="btns"><label class="num" for="wex">' + T("apExL") + ' <select id="wex" data-wex="1"><option value="0">' + T("apExNo") + "</option>" +
+      exchSems().map(function (n) { return '<option value="' + n + '"' + (ui.wex === n ? " selected" : "") + ">" + T("apExOpt", { n: n, s: T(n % 2 ? "autumn" : "spring").toLowerCase() }) + "</option>"; }).join("") + "</select></label>" +
+      '<button type="button" class="btn" id="aprun" data-aprun="1">' + T("apRun") + "</button></div>";
+    if (ui.ap) h += '<div class="card approp" role="status">' + autoPreview(ui.ap.r, ui.ap.exch) + "</div>";
+    h += "<h4>" + T("apExH") + '</h4><p class="small">' + T("apExLead") + '</p><ul class="exl">' + exchAll().map(function (x) {
+      var why = [];
+      if (x.r.leftEcts) why.push(T("apWhyLeft", { c: nameList(x.r.left) }));
+      if (x.cl) why.push(T("apWhyCl"));
+      x.over.forEach(function (s) { why.push(T("apWhyOv", { s: s })); });
+      return '<li class="' + (x.ok ? "ok" : "no") + '"><strong>' + T("apExOpt", { n: x.n, s: T(x.n % 2 ? "autumn" : "spring").toLowerCase() }) + ":</strong> " +
+        (x.ok ? esc(T(x.moves > 1 ? "apYes" : x.moves ? "apYes1" : "apYes0", { k: x.moves })) + ' <button type="button" class="linkbtn" id="apex-' + x.n + '" data-apex="' + x.n + '">' + T("apPlanEx") + "</button>" : esc(T("apNoEx") + ": " + why.join("; "))) + "</li>";
+    }).join("") + "</ul>";
+    return h;
   }
   // Vælg mellem et kursus' tidspunkter i samme semester (fx torsdag, mandag eller tre uger i august)
   function altSel(c, it) {
@@ -3678,6 +3821,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     else if (t.hasAttribute("data-xmv")) { var xm = Number(t.value), xi = Number(t.getAttribute("data-xmv")); if (xm) { st.ext.forEach(function (x) { if (x.k === xi) x.sem = xm; }); ui.semOpen[xm] = true; commit(); } }
     else if (t.hasAttribute("data-prev")) { setPrev(t.getAttribute("data-prev"), t.checked); commit(); }
     else if (t.hasAttribute("data-prevb")) { st.prevB = t.value; save(); render(); }
+    else if (t.hasAttribute("data-wex")) { ui.wex = Number(t.value) || 0; ui.ap = null; render(); }
     else if (t.hasAttribute("data-alt")) { st.alt = st.alt || {}; st.alt[t.getAttribute("data-alt")] = Number(t.value); commit(); }
     else if (t.hasAttribute("data-mv")) { var mn = Number(t.value); if (mn) { st.sem[t.getAttribute("data-mv")] = mn; ui.semOpen[mn] = true; commit(); } }
     else if (t.hasAttribute("data-flag")) { st.flags[t.getAttribute("data-flag")] = t.checked; commit(); }
@@ -3688,6 +3832,7 @@ if (typeof module !== "undefined") module.exports = KPE;
   // Søgning: kun kursuslisten tegnes om, så markøren bliver i søgefeltet.
   document.addEventListener("input", function (ev) {
     if (ev.target.id === "pq") { ui.pq = ev.target.value; if ($("prevhits")) $("prevhits").innerHTML = prevHits(); return; }
+    if (ev.target.id === "wq") { ui.wq = ev.target.value; if ($("wlist")) $("wlist").innerHTML = wishList(); return; }
     if (ev.target.id === "mq") { ui.mq = ev.target.value; if ($("mplist")) $("mplist").innerHTML = mPickList(ui.mAdd); return; }
     if (ev.target.id !== "q") return;
     ui.q = ev.target.value;
@@ -3725,6 +3870,15 @@ if (typeof module !== "undefined") module.exports = KPE;
       var pc = t.getAttribute("data-pcat");
       ui.pickCat = ui.pickCat === pc ? null : pc; ui.pickAll = null;
       if ($("plist")) { $("plist").innerHTML = pickList(ui.addSem); if ($("pc-" + pc)) $("pc-" + pc).focus(); }
+    }
+    else if (t.hasAttribute("data-wadd")) { var wid = t.getAttribute("data-wadd"); toggle(wid, true); delete st.sem[wid]; ui.ap = null; commit(); if ($("wq")) { try { $("wq").focus({ preventScroll: true }); } catch (e) { } } }
+    else if (t.hasAttribute("data-aprun")) { ui.ap = { exch: ui.wex || 0, r: autoRun(ui.wex || 0) }; render(); }
+    else if (t.hasAttribute("data-apex")) { ui.wex = Number(t.getAttribute("data-apex")); ui.ap = { exch: ui.wex, r: autoRun(ui.wex) }; render(); if ($("apuse")) $("apuse").focus(); }
+    else if (t.hasAttribute("data-apno")) { ui.ap = null; render(); }
+    else if (t.hasAttribute("data-apuse") && ui.ap) {
+      var R = ui.ap.r, xn = ui.ap.exch; st.sem = {}; for (var mk in R.map) st.sem[mk] = R.map[mk];
+      if (xn && extSum(xn) < 30) { var kk = (st.ext || []).reduce(function (m, x) { return Math.max(m, x.k); }, 0) + 1; st.ext = st.ext || []; st.ext.push({ k: kk, sem: xn, ects: 30 - extSum(xn), name: T("apExAdded"), nr: "" }); }
+      ui.ap = null; ui.semOpen[xn || 1] = true; commit();
     }
     else if (t.hasAttribute("data-acc")) { var k = t.getAttribute("data-acc"); ui.acc = ui.acc === k ? null : k; render(); }
     else if (t.hasAttribute("data-allsubj")) { var sj = t.getAttribute("data-allsubj"); ui.allSubj[sj] = !ui.allSubj[sj]; render(); }
