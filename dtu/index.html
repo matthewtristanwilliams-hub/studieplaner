@@ -2628,12 +2628,13 @@ var KPE = (function () {
     return { sems: sems, unplaced: unplaced, clashes: total };
   }
   // Fordel de kurser, der ikke har et semester: undgå sammenfald, og fyld de letteste semestre først.
-  function autoPlace(KP, b, has, semMap, altPref) {
+  function autoPlace(KP, b, has, semMap, altPref, minSem) {
     var map = {}, k;
     for (k in semMap) map[k] = semMap[k];
     semPlan(KP, b, has, map, altPref).unplaced.forEach(function (id) {
       var best = null;
-      validSems(byId[id], b).forEach(function (n) {
+      var vs = validSems(byId[id], b), fut = vs.filter(function (n) { return n > (minSem || 0); });
+      (fut.length ? fut : vs).forEach(function (n) {
         map[id] = n;
         var q = semPlan(KP, b, has, map, altPref), load = q.sems[n - 1].ects;
         var score = q.clashes * 1000 + Math.max(0, load - 30) * 10 + load + n * 0.01;
@@ -2659,20 +2660,26 @@ var KPE = (function () {
   }
   function optimize(KP, b, has, start, o) {
     o = o || {}; o.home = o.home || {};
-    var list = KP.courses.filter(function (c) { return has.has(c.id); }), K = { courses: list }, map = {};
-    list.forEach(function (c) { var vs = validSems(c, b); map[c.id] = vs.indexOf(Number(start[c.id])) >= 0 ? Number(start[c.id]) : (vs.indexOf(o.home[c.id]) >= 0 ? o.home[c.id] : vs[0]); if (!map[c.id]) delete map[c.id]; });
+    var list = KP.courses.filter(function (c) { return has.has(c.id); }), K = { courses: list }, map = {}, cand = {}, lock = o.locked || 0;
+    // Semestre, man har taget eller er i gang med, ligger fast: deres kurser flyttes ikke, og der lægges intet nyt ind i dem
+    list.forEach(function (c) {
+      var vs = validSems(c, b), s0 = Number(start[c.id]), fut = vs.filter(function (n) { return n > lock; });
+      cand[c.id] = lock && vs.indexOf(s0) >= 0 && s0 <= lock ? [s0] : (fut.length ? fut : vs);
+      map[c.id] = cand[c.id].indexOf(s0) >= 0 ? s0 : (cand[c.id].indexOf(o.home[c.id]) >= 0 ? o.home[c.id] : cand[c.id][0]);
+      if (!map[c.id]) delete map[c.id];
+    });
     var cur = planCost(K, b, has, map, o), better = true, pass = 0;
     function tryMap() { var t = planCost(K, b, has, map, o); if (t.cost < cur.cost - 1e-9) { cur = t; return true; } return false; }
     while (better && pass++ < 15) {
       better = false;
       list.forEach(function (c) {
-        validSems(c, b).forEach(function (n) { var old = map[c.id]; if (n === old) return; map[c.id] = n; if (tryMap()) better = true; else map[c.id] = old; });
+        cand[c.id].forEach(function (n) { var old = map[c.id]; if (n === old) return; map[c.id] = n; if (tryMap()) better = true; else map[c.id] = old; });
       });
       if (better) continue;
       // byt to kurser, der kan ligge i hinandens semestre
       for (var i = 0; i < list.length; i++) for (var j = i + 1; j < list.length; j++) {
         var a = list[i].id, z = list[j].id, na = map[a], nz = map[z];
-        if (na === nz || validSems(list[i], b).indexOf(nz) < 0 || validSems(list[j], b).indexOf(na) < 0) continue;
+        if (na === nz || cand[a].indexOf(nz) < 0 || cand[z].indexOf(na) < 0) continue;
         map[a] = nz; map[z] = na; if (tryMap()) better = true; else { map[a] = na; map[z] = nz; }
       }
     }
@@ -2842,6 +2849,11 @@ if (typeof module !== "undefined") module.exports = KPE;
     apDrop: ["Din plan har allerede {a} ECTS, så du skal fjerne {b} ECTS valgfrie kurser for at gøre plads til udvekslingen.", "Your plan already has {a} ECTS, so you need to remove {b} ECTS of electives to make room for the exchange."],
     apDropNo: ["Din plan har {a} ECTS uden valgfrie kurser, der kan fjernes, så der er ikke plads til 30 ECTS fra udlandet inden for 180 ECTS.", "Your plan has {a} ECTS without electives that can be removed, so there is no room for 30 ECTS from abroad within 180 ECTS."],
     apExAdded: ["Udveksling", "Exchange"],
+    apCurL: ["Hvor langt er du?", "How far along are you?"], apCur0: ["Jeg er ikke startet endnu", "I have not started yet"], apCurN: ["I gang med {n}. semester", "Taking semester {n}"],
+    apCurNote: ["Kurserne i 1.-{n}. semester bliver liggende, og nye kurser lægges i senere semestre.", "Courses in semesters 1-{n} stay where they are, and new courses go into later semesters."],
+    apCurNote1: ["Kurserne i 1. semester bliver liggende, og nye kurser lægges i senere semestre.", "Courses in semester 1 stay where they are, and new courses go into later semesters."],
+    apExNone: ["Der er ingen kommende semestre tilbage at tage på udveksling i.", "There are no upcoming semesters left to go on exchange in."],
+    tagNow: ["i gang", "in progress"], tagDone: ["taget", "done"],
     altA: ["Vælg tidspunkt for {c}", "Choose the time for {c}"], eller: [" eller ", " or "], jan: ["januar", "January"], jun: ["juni", "June"], aug: ["august", "August"],
     hMasters: ["Hvilke kandidater kan du søge?", "Which master's programmes can you apply for?"],
     lMasters: ["Tryk på en kandidat for at se kravene. Stjernen gemmer den som ønske.", "Press a programme to see the requirements. The star saves it as a wish."],
@@ -2971,14 +2983,14 @@ if (typeof module !== "undefined") module.exports = KPE;
     var p = KP.plans && KP.plans[pref.b];
     return !p ? "valgfri" : (p.obl[c.id] !== undefined ? "obl" : (p.retn[c.id] !== undefined ? "retn" : (p.pool[c.id] !== undefined || studyPool(c.id) ? "pulje" : "valgfri")));
   }
-  function blank(b) { return { c: (b && KP.defaults[b] ? KP.defaults[b] : []).slice(), other: 0, flags: {}, supp: {}, wish: [], sem: {}, extra: 0, pv: 1, ext: [], prev: [], prevB: "", ms: { id: null, c: [], sem: {} }, alt: {} }; }
+  function blank(b) { return { c: (b && KP.defaults[b] ? KP.defaults[b] : []).slice(), other: 0, flags: {}, supp: {}, wish: [], sem: {}, extra: 0, pv: 1, ext: [], prev: [], prevB: "", ms: { id: null, c: [], sem: {} }, alt: {}, cur: 0 }; }
   // Hvert valgt kursus får et semester: brugerens valg, ellers DTU's anbefalede, ellers det med færrest sammenfald.
   function syncSem() {
     if (!pref.b) return;
     E.setSems(6 + (st.extra || 0));
     var H = hasPlan(), def = KP.semDefaults[pref.b] || {}, out = {};
     H.forEach(function (id) { var n = Number(st.sem[id]) || def[id]; if (n) out[id] = n; });
-    st.sem = E.autoPlace(KP, pref.b, H, out, st.alt);
+    st.sem = E.autoPlace(KP, pref.b, H, out, st.alt, st.cur || 0);
   }
 
   function apply(s) {
@@ -3009,6 +3021,8 @@ if (typeof module !== "undefined") module.exports = KPE;
     // Kurser bestået før et studieskift
     st.prev = (Array.isArray(s.prev) ? s.prev : []).filter(function (id) { return !!E.course(id) && st.c.indexOf(id) >= 0; });
     st.prevB = typeof s.prevB === "string" && bach(s.prevB) ? s.prevB : "";
+    // Hvor langt man er: semestre til og med dette er taget eller i gang og flyttes ikke af planlæggeren
+    st.cur = Math.max(0, Math.min(6 + st.extra, Math.round(Number(s.cur)) || 0));
     // Valgt tidspunkt pr. kursus (indeks i kursets udbud), fx august-udgaven af Matematik 2
     st.alt = {};
     if (s.alt && typeof s.alt === "object") for (var ak in s.alt) { var ac = E.course(ak), ai = Math.round(Number(s.alt[ak])); if (ac && ai >= 0 && ai < E.offOf(ac, pref.b).length) st.alt[ak] = ai; }
@@ -3457,11 +3471,11 @@ if (typeof module !== "undefined") module.exports = KPE;
   var AUTO = { key: "", ex: null };
   function nameList(ids) { return ids.filter(function (id, i) { return ids.indexOf(id) === i; }).map(function (id) { var c = E.course(id); return c ? (/^\d/.test(c.nr) ? c.nr + " " : "") + L(c.name) : id; }).join(", "); }
   function autoHome() { var d = KP.semDefaults[pref.b] || {}, h = {}, k; for (k in d) h[k] = d[k]; return h; }
-  function autoRun(exch) { E.setSems(6 + (st.extra || 0)); return E.optimize(KP, pref.b, hasPlan(), st.sem, { exch: exch || 0, alt: st.alt, home: autoHome() }); }
+  function autoRun(exch) { E.setSems(6 + (st.extra || 0)); return E.optimize(KP, pref.b, hasPlan(), st.sem, { exch: exch || 0, alt: st.alt, home: autoHome(), locked: st.cur || 0 }); }
   function autoMoves(r) { var out = []; hasPlan().forEach(function (id) { if (r.map[id] && r.map[id] !== st.sem[id]) out.push({ id: id, a: st.sem[id] || 0, b: r.map[id] }); }); return out; }
-  function exchSems() { var o = []; for (var n = 3; n <= 6 + st.extra; n++) o.push(n); return o; }
+  function exchSems() { var o = []; for (var n = Math.max(3, (st.cur || 0) + 1); n <= 6 + st.extra; n++) o.push(n); return o; }
   function exchAll() {
-    var key = JSON.stringify([pref.b, st.c, st.sem, st.alt, st.extra, st.prev]);
+    var key = JSON.stringify([pref.b, st.c, st.sem, st.alt, st.extra, st.prev, st.cur]);
     if (AUTO.key !== key) {
       AUTO.key = key;
       // Sammenfald og fulde semestre, som planen også har uden udveksling, skyldes ikke udvekslingen
@@ -3518,11 +3532,14 @@ if (typeof module !== "undefined") module.exports = KPE;
     var h = '<p class="grule">' + T("apLead") + "</p>" +
       '<div class="find"><label class="vh" for="wq">' + T("apQ") + '</label><input type="search" id="wq" autocomplete="off" placeholder="' + T("apQ") + '" value="' + esc(ui.wq || "") + '"></div><div id="wlist">' + wishList() + "</div>" +
       '<p class="small">' + T("apAdded", { n: hasPlan().size }) + "</p>" +
+      '<div class="btns"><label class="num" for="wcur">' + T("apCurL") + ' <select id="wcur" data-wcur="1"><option value="0">' + T("apCur0") + "</option>" +
+      (function () { var o = ""; for (var n = 1; n <= 5 + st.extra; n++) o += '<option value="' + n + '"' + (st.cur === n ? " selected" : "") + ">" + T("apCurN", { n: n }) + "</option>"; return o; })() + "</select></label></div>" +
+      (st.cur ? '<p class="small">' + T(st.cur === 1 ? "apCurNote1" : "apCurNote", { n: st.cur }) + "</p>" : "") +
       '<div class="btns"><label class="num" for="wex">' + T("apExL") + ' <select id="wex" data-wex="1"><option value="0">' + T("apExNo") + "</option>" +
       exchSems().map(function (n) { return '<option value="' + n + '"' + (ui.wex === n ? " selected" : "") + ">" + T("apExOpt", { n: n, s: T(n % 2 ? "autumn" : "spring").toLowerCase() }) + "</option>"; }).join("") + "</select></label>" +
       '<button type="button" class="btn" id="aprun" data-aprun="1">' + T("apRun") + "</button></div>";
     if (ui.ap) h += '<div class="card approp" role="status">' + autoPreview(ui.ap.r, ui.ap.exch) + "</div>";
-    h += "<h4>" + T("apExH") + '</h4><p class="small">' + T("apExLead") + '</p><ul class="exl">' + exchAll().map(function (x) {
+    h += "<h4>" + T("apExH") + '</h4><p class="small">' + T("apExLead") + "</p>" + (exchSems().length ? "" : '<p class="small">' + T("apExNone") + "</p>") + '<ul class="exl">' + exchAll().map(function (x) {
       var why = [];
       if (x.r.leftEcts) why.push(T("apWhyLeft", { c: nameList(x.r.left) }));
       if (x.cl) why.push(T("apWhyCl"));
@@ -3564,6 +3581,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     var xs = extIn(S.n), ects = S.ects + extSum(S.n);
     var h = '<section class="sem' + (S.clashes.length ? " hasclash" : "") + '"><button type="button" class="semh" id="se-' + S.n + '" data-semopen="' + S.n + '" aria-expanded="' + open + '">' +
       '<span class="t">' + T("semN", { n: S.n }) + ' <span class="sea sea-' + S.season + '">' + T(S.season === "E" ? "autumn" : "spring") + "</span>" + (S.n > 6 ? ' <span class="tag">' + T("tagExtra") + "</span>" : "") +
+      (st.cur && S.n <= st.cur ? ' <span class="tag tag-ok">' + T(S.n === st.cur ? "tagNow" : "tagDone") + "</span>" : "") +
       (S.clashes.length ? ' <span class="tabbadge">' + S.clashes.length + "</span>" : "") + "</span>" +
       '<span class="gsum' + (ects > 30 ? " over" : "") + '">' + ects + " ECTS" + (ects > 30 ? " · " + T("over30") : "") + '</span><span class="chev" aria-hidden="true">›</span></button>';
     if (!open) return h + '<p class="small semsum">' + (S.items.length || xs.length ? S.items.map(function (it) { return '<span class="sn">' + (/[0-9A-Za-z]/.test(nr(it.id)) ? '<span class="snr">' + esc(nr(it.id)) + "</span>&nbsp;" : "") + esc(L(E.course(it.id).name)) + "</span>"; })
@@ -3821,6 +3839,7 @@ if (typeof module !== "undefined") module.exports = KPE;
     else if (t.hasAttribute("data-xmv")) { var xm = Number(t.value), xi = Number(t.getAttribute("data-xmv")); if (xm) { st.ext.forEach(function (x) { if (x.k === xi) x.sem = xm; }); ui.semOpen[xm] = true; commit(); } }
     else if (t.hasAttribute("data-prev")) { setPrev(t.getAttribute("data-prev"), t.checked); commit(); }
     else if (t.hasAttribute("data-prevb")) { st.prevB = t.value; save(); render(); }
+    else if (t.hasAttribute("data-wcur")) { st.cur = Number(t.value) || 0; if (ui.wex && ui.wex <= st.cur) ui.wex = 0; ui.ap = null; save(); render(); }
     else if (t.hasAttribute("data-wex")) { ui.wex = Number(t.value) || 0; ui.ap = null; render(); }
     else if (t.hasAttribute("data-alt")) { st.alt = st.alt || {}; st.alt[t.getAttribute("data-alt")] = Number(t.value); commit(); }
     else if (t.hasAttribute("data-mv")) { var mn = Number(t.value); if (mn) { st.sem[t.getAttribute("data-mv")] = mn; ui.semOpen[mn] = true; commit(); } }
